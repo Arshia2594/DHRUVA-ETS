@@ -1,35 +1,37 @@
 
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import useAuth from "./hooks/useAuth";
+import PropTypes from "prop-types";
 
-import React from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import useAuth from './hooks/useAuth';
-import PropTypes from 'prop-types';
+// Layout
+import RoleBasedDashboardLayout from "./components/layout/RoleBasedDashboardLayout";
 
-// Pages
-import LogIn from './Pages/login/LogIn';
-import AdminDashboardLayout from './components/layout/AdminDashboardLayout';
-import AdminDashboard from './Pages/admin/AdminDahboard';
+// Public Page
+import LogIn from "./Pages/login/LogIn";
 
-import Report from './Pages/admin/Report';
-import Employee from './Pages/admin/Employee';
-import Customer from './Pages/admin/customer/Customer';
-import Team from './Pages/admin/Team';
-import Reports from './Pages/admin/report/Reports';
+// Admin Pages
+import AdminDashboard from "./Pages/admin/AdminDahboard";
+import Report from "./Pages/admin/Report";
+import Employee from "./Pages/admin/Employee";
+import Customer from "./Pages/admin/customer/Customer";
+import Projects from "./Pages/manager/Projects"; // Reused
+import Team from "./Pages/admin/Team";
 
 // Manager Pages
-import Projects from './Pages/manager/Projects';
-import ManagerDashboardLayout from './components/layout/ManagerDashboardLayout';
-import TimeSheetTracker from './Pages/manager/TimeSheetTracker';
+import ManagerDashboard from "./Pages/manager/ManagerDashboard";
+import TimeTracking from "./Pages/manager/TimeSheetTracker";
+import ProjectDetails from "./components/common/ProjectDetails";
 
-// Employee Pages
-import TimeTracking from './Pages/employee/TimeTracking';
-import ProjectDetails from './components/common/ProjectDetails';
-import EmployeeDashboardLayout from './components/layout/EmployeeDashboardLayout';
-import EmployeeDashboard from './Pages/employee/EmployeeDashboard';
+// Employee/User Pages
+import EmployeeDashboard from "./Pages/employee/EmployeeDashboard";
+import Reports from "./Pages/admin/report/Reports"; // Shared
+import TimeSheetTracker from "./Pages/manager/TimeSheetTracker";
 
-
-// ProtectedRoute component
+// --------------------------
+// ProtectedRoute Component
+// --------------------------
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { auth } = useAuth();
 
@@ -46,11 +48,12 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
-  allowedRoles: PropTypes.arrayOf(PropTypes.string)
+  allowedRoles: PropTypes.arrayOf(PropTypes.string),
 };
 
-
-//  App component
+// --------------------------
+// App Component
+// --------------------------
 const App = () => {
   return (
     <AuthProvider>
@@ -62,8 +65,8 @@ const App = () => {
         <Route
           path="/admin/*"
           element={
-            <ProtectedRoute allowedRoles={['Admin']}>
-              <AdminDashboardLayout />
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <RoleBasedDashboardLayout role="Admin" />
             </ProtectedRoute>
           }
         >
@@ -79,12 +82,12 @@ const App = () => {
         <Route
           path="/manager/*"
           element={
-            <ProtectedRoute allowedRoles={['Manager']}>
-              <ManagerDashboardLayout />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <RoleBasedDashboardLayout role="Manager" />
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard" element={<ManagerDashboardLayout />} />
+          <Route path="dashboard" element={<ManagerDashboard />} />
           <Route path="report" element={<div>Manager reports</div>} />
           <Route path="team" element={<div>Team Details</div>} />
           <Route path="time-tracker" element={<TimeTracking />} />
@@ -96,8 +99,8 @@ const App = () => {
         <Route
           path="/user/*"
           element={
-            <ProtectedRoute allowedRoles={['User']}>
-              <EmployeeDashboardLayout />
+            <ProtectedRoute allowedRoles={["User"]}>
+              <RoleBasedDashboardLayout role="User" />
             </ProtectedRoute>
           }
         >
@@ -113,4 +116,5 @@ const App = () => {
 };
 
 export default App;
+
 
