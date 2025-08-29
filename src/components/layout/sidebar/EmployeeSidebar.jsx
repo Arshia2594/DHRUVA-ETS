@@ -1,4 +1,4 @@
-// src/components/layout/sidebar/EmployeeSidebar.jsx
+
 import {
   FiBarChart2,
   FiMonitor,
@@ -8,7 +8,7 @@ import {
 } from "react-icons/fi";
 import SidebarWrapper from "../../common/SidebarWrapper";
 
-const EmployeeSidebar = ({ open, darkMode }) => {
+const EmployeeSidebar = ({ open,setOpen, darkMode }) => {
   const menuItems = [
     {
       name: "Dashboard",
@@ -40,6 +40,7 @@ const EmployeeSidebar = ({ open, darkMode }) => {
   return (
     <SidebarWrapper
       open={open}
+      setOpen={setOpen} 
       darkMode={darkMode}
       menuItems={menuItems}
       teamItems={[]} // No dropdown for employee

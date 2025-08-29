@@ -1,6 +1,5 @@
 
 
-
 import {
   FiUsers,
   FiBarChart2,
@@ -11,9 +10,8 @@ import {
   FiSettings,
 } from "react-icons/fi";
 import SidebarWrapper from "../../common/SidebarWrapper";
-// import SidebarWrapper from "./SidebarWrapper";
 
-const AdminSidebar = ({ open, darkMode }) => {
+const AdminSidebar = ({ open, setOpen, darkMode }) => {
   const menuItems = [
     { name: "Dashboard", icon: <FiBarChart2 size={18} />, path: "/admin/dashboard" },
     { name: "Report", icon: <FiMonitor size={18} />, path: "/admin/report" },
@@ -33,6 +31,7 @@ const AdminSidebar = ({ open, darkMode }) => {
   return (
     <SidebarWrapper
       open={open}
+      setOpen={setOpen} 
       darkMode={darkMode}
       menuItems={menuItems}
       teamItems={teamItems}
@@ -42,3 +41,4 @@ const AdminSidebar = ({ open, darkMode }) => {
 };
 
 export default AdminSidebar;
+
