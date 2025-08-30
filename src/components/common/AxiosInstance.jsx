@@ -4,7 +4,7 @@ import axios from "axios";
 const BASE_API = import.meta.env.VITE_BASE_API_URL;
 
 const axiosInstance = axios.create({
-  baseURL: BASE_API, // ✅ will become http://localhost:9000/api
+  baseURL: BASE_API, 
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -31,3 +31,25 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
+// AxiosInstance.jsx
+// import axios from "axios";
+
+// const BASE_URL = import.meta.env.VITE_BASE_API_URL || "http://localhost:9000/api";
+
+// const axiosInstance = axios.create({
+//   baseURL: BASE_URL,
+//   headers: {
+//     "Content-Type": "application/json",
+//   },
+// });
+
+// axiosInstance.interceptors.response.use(
+//   (res) => res.data,
+//   (err) => {
+//     console.error("API error: ", err.response || err);
+//     return Promise.reject(err);
+//   }
+// );
+
+// export default axiosInstance;
+

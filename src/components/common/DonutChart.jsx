@@ -37,3 +37,4 @@ const DonutChart = ({ config }) => {
 };
 
 export default DonutChart;
+
