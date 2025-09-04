@@ -1,130 +1,102 @@
-// import { useEffect, useState } from "react";
-// import { useParams } from "react-router-dom";
-// import axiosInstance from "../../components/common/AxiosInstance";
 
-// const ProjectDetails = () => {
-//   const { id } = useParams();
-//   const [project, setProject] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     const fetchProject = async () => {
-//       try {
-//         const res = await axiosInstance.get(`/projects/${id}`);
-//         setProject(res.data?.data || res.data);
-//       } catch (err) {
-//         console.error(err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchProject();
-//   }, [id]);
-
-//   if (loading) return <p>Loading...</p>;
-//   if (!project) return <p>Project not found.</p>;
-
-//   return (
-//     <div className="p-6">
-//       <h1 className="text-2xl font-bold mb-4">{project.name}</h1>
-//       <p><strong>Description:</strong> {project.description}</p>
-//       <p><strong>Start Date:</strong> {project.startDate}</p>
-//       <p><strong>End Date:</strong> {project.endDate}</p>
-//       <p><strong>Status:</strong> {project.status}</p>
-//       {/* Add more fields as needed */}
-//     </div>
-//   );
-// };
-
-// export default ProjectDetails;
-
-import { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
-import axiosInstance from "../../components/common/AxiosInstance";
-import dayjs from "dayjs";
+import useAxios from "../../hooks/useAxios";
+import HeaderImage from "../../assets/images/Industrial-Automation.jpg";
+import avatar1 from "../../assets/images/team-1.jpg";
+import avatar2 from "../../assets/images/team-2.jpg";
+
+// Heroicons
+import {
+  CalendarDaysIcon,
+  ClockIcon,
+  AdjustmentsHorizontalIcon as HourglassIcon,
+} from "@heroicons/react/24/outline";
+
+import MDAvatarGroup from "./MDAvatarGroup";
 
 const ProjectDetails = () => {
-  const { id } = useParams();
-  const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { id } = useParams(); // 🆔 Get project ID from route
+  const { data: project, loading, error } = useAxios(`/project/get-project-by-id/${id}`);
 
-  useEffect(() => {
-    if (!id) {
-      setError("Invalid project ID.");
-      setLoading(false);
-      return;
-    }
+  const avatars = [
+    { src: avatar1, alt: "Avatar 1", name: "Priyanka" },
+    { src: avatar2, alt: "Avatar 2", name: "Shyamala" },
+  ];
 
-    const fetchProject = async () => {
-      try {
-        const res = await axiosInstance.get(`/projects/${id}`);
-        // Ensure data exists
-        if (res.data?.data || res.data) {
-          setProject(res.data?.data || res.data);
-        } else {
-          setError("Project not found.");
-        }
-      } catch (err) {
-        console.error("API Error:", err);
-        setError(
-          err.response?.data?.message ||
-            "Failed to fetch project details. Please try again."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProject();
-  }, [id]);
-
-  if (loading)
-    return <p className="p-6 text-gray-500">Loading project details...</p>;
-
-  if (error)
-    return (
-      <p className="p-6 text-red-600 font-semibold">{error}</p>
-    );
+  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (error) return <div className="text-center text-red-500">Error loading project</div>;
+  if (!project) return <div className="text-center text-gray-500">No project found</div>;
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded shadow-md">
-      <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-        {project.name || "No Name"}
-      </h1>
+    <div className="bg-white shadow rounded overflow-hidden">
+      <img src={HeaderImage} alt="Project Header" className="w-full h-40 object-cover" />
 
-      <div className="space-y-2 text-gray-700 dark:text-gray-200">
-        <p>
-          <strong>Description:</strong> {project.description || "N/A"}
-        </p>
-        <p>
-          <strong>Start Date:</strong>{" "}
-          {project.startDate ? dayjs(project.startDate).format("DD MMM YYYY") : "N/A"}
-        </p>
-        <p>
-          <strong>End Date:</strong>{" "}
-          {project.endDate ? dayjs(project.endDate).format("DD MMM YYYY") : "N/A"}
-        </p>
-        <p>
-          <strong>Status:</strong> {project.status || "N/A"}
-        </p>
+      <div className="p-6">
+        {/* Project Title */}
+        <div className="mb-4">
+          <h2 className="text-xl font-bold">
+            {project.ProjectName} [ {project.ProjectCode} ]
+          </h2>
+          <p className="text-gray-600">Manager: {project.Manager}</p>
+        </div>
 
-        {/* Example additional fields */}
-        {project.manager && (
-          <p>
-            <strong>Project Manager:</strong> {project.manager}
-          </p>
-        )}
-        {project.team && (
-          <p>
-            <strong>Team:</strong> {project.team.join(", ")}
-          </p>
-        )}
+        {/* Info Boxes */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <CalendarDaysIcon className="h-5 w-5 text-blue-900" />
+            <div>
+              <div className="font-semibold">Project Start</div>
+              <div>{project.ProjectStartDate}</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <CalendarDaysIcon className="h-5 w-5 text-blue-900" />
+            <div>
+              <div className="font-semibold">Project End</div>
+              <div>{project.ProjectEndDate || "N/A"}</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <HourglassIcon className="h-5 w-5 text-blue-900" />
+            <div>
+              <div className="font-semibold">Status</div>
+              <div>{project.CompletionStatus}</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <ClockIcon className="h-5 w-5 text-blue-900" />
+            <div>
+              <div className="font-semibold">Total Members</div>
+              <div>{project.Members?.length || 0}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Avatar Group */}
+        <div className="mt-4 flex justify-end">
+          <MDAvatarGroup
+            avatars={project.Members?.map((m, i) => ({
+              name: m.FirstName,
+              src: i % 2 === 0 ? avatars[0].src : avatars[1].src,
+            }))}
+            max={5}
+            size="large"
+          />
+        </div>
+
+        {/* Work History */}
+        <hr className="my-6 border-t" />
+        <h3 className="font-semibold mb-4">Work History</h3>
+
+     
+        <div className="text-gray-500 italic">No work history data yet.</div>
       </div>
     </div>
   );
 };
 
 export default ProjectDetails;
-

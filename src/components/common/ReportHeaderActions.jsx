@@ -1,24 +1,4 @@
-// import React from "react";
-// import { FaDownload } from "react-icons/fa";
-// import { FiSliders, FiToggleRight } from "react-icons/fi";
 
-// const ReportHeaderActions = () => {
-//   return (
-//     <div className="flex items-center gap-4 text-sm text-gray-600">
-//       <button className="hover:text-blue-600 flex items-center gap-1">
-//         <FaDownload /> Export
-//       </button>
-//       <button className="hover:text-blue-600 flex items-center gap-1">
-//         <FiToggleRight /> Rounding
-//       </button>
-//       <button className="hover:text-blue-600 flex items-center gap-1">
-//         <FiSliders /> Show amount
-//       </button>
-//     </div>
-//   );
-// };
-
-// export default ReportHeaderActions;
 
 import React from "react";
 import jsPDF from "jspdf";
@@ -28,7 +8,7 @@ import { saveAs } from "file-saver";
 import MUIButton from "./MUIButton";
 import { FaFilePdf, FaFileExcel } from "react-icons/fa";
 
-const ReportHeaderActions = ({ rows }) => {
+const ReportHeaderActions = ({ rows = [] }) => {
   const handleExportPDF = () => {
     const doc = new jsPDF();
 
@@ -46,6 +26,13 @@ const ReportHeaderActions = ({ rows }) => {
         r.EndTime,
         r.TotalTimeSpentInMinutes,
       ]),
+      styles: {
+        fontSize: 10,
+        cellPadding: 3,
+      },
+      headStyles: {
+        fillColor: [34, 197, 94], // Tailwind green-500
+      },
     });
 
     doc.save("Report.pdf");
@@ -74,18 +61,23 @@ const ReportHeaderActions = ({ rows }) => {
   };
 
   return (
-   <div className="flex gap-2">
-  <MUIButton onClick={handleExportPDF}>
-    <FaFilePdf className="w-4 h-4" />
-    PDF
-  </MUIButton>
-  <MUIButton onClick={handleExportExcel}>
-    <FaFileExcel className="w-4 h-4" />
-    Excel
-  </MUIButton>
-</div>
+    <div className="flex flex-wrap gap-2 justify-end items-center mt-2">
+      <MUIButton
+        onClick={handleExportPDF}
+        className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition duration-150"
+      >
+        <FaFilePdf className="w-5 h-5" />
+        Export PDF
+      </MUIButton>
 
-
+      <MUIButton
+        onClick={handleExportExcel}
+        className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition duration-150"
+      >
+        <FaFileExcel className="w-5 h-5" />
+        Export Excel
+      </MUIButton>
+    </div>
   );
 };
 

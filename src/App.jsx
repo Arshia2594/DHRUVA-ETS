@@ -123,6 +123,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import useAuth from "./hooks/useAuth";
 import PropTypes from "prop-types";
+import './index.css';
+
 
 // Layout
 import RoleBasedDashboardLayout from "./components/layout/RoleBasedDashboardLayout";

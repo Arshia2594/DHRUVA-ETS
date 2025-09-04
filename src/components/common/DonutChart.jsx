@@ -1,19 +1,4 @@
-// import Highcharts from "highcharts";
-// import { useEffect, useRef } from "react";
 
-// const DonutChart = ({ config }) => {
-//   const chartRef = useRef(null);
-
-//   useEffect(() => {
-//     if (config && chartRef.current) {
-//       Highcharts.chart(chartRef.current, config);
-//     }
-//   }, [config]);
-
-//   return <div ref={chartRef} className="w-full h-96" />;
-// };
-
-// export default DonutChart;
 
 
 import React, { useEffect, useRef } from "react";

@@ -1,7 +1,5 @@
 
 
-
-
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import axiosInstance from "../../components/common/AxiosInstance";
@@ -13,7 +11,6 @@ import DonutChart from "../../components/common/DonutChart";
 import ReportTable from "../../components/common/ReportTable";
 
 const Reports = () => {
-  const [activeTab, setActiveTab] = useState("Summary");
   const [projectOptions, setProjectOptions] = useState([]);
   const [filteredRows, setFilteredRows] = useState([]);
   const [columnChartConfig, setColumnChartConfig] = useState(null);
@@ -39,7 +36,10 @@ const Reports = () => {
 
   const fetchData = async (params) => {
     try {
-      const res = await axiosInstance.get("/empTimesheet/get-weekly-overview", { params });
+      const res = await axiosInstance.get(
+        "/empTimesheet/get-weekly-overview",
+        { params }
+      );
       setFilteredRows(res.data);
     } catch {
       setFilteredRows([]);
@@ -72,7 +72,11 @@ const Reports = () => {
     const series = projects.map((project) => {
       const data = categories.map((date) =>
         filteredRows
-          .filter((r) => r.ProjectName === project && dayjs(r.WorkDate).format("YYYY-MM-DD") === date)
+          .filter(
+            (r) =>
+              r.ProjectName === project &&
+              dayjs(r.WorkDate).format("YYYY-MM-DD") === date
+          )
           .reduce((acc, r) => acc + (parseFloat(r.TotalTimeSpentInMinutes) || 0), 0)
       );
       return { name: project, data };
@@ -91,42 +95,36 @@ const Reports = () => {
       xAxis: { categories, title: { text: "Date" } },
       yAxis: { min: 0, title: { text: "Minutes" } },
       series,
+      credits: { enabled: false },
     });
 
     setDonutChartConfig({
       chart: { type: "pie" },
       title: { text: "Work Distribution" },
       series: [{ name: "Minutes", colorByPoint: true, data: donutData }],
+      credits: { enabled: false },
     });
   }, [filteredRows]);
 
   return (
     <div className="p-6">
       <HeaderTitle title="Report Dashboard" />
-      {/* <ReportTabs activeTab={activeTab} onTabChange={setActiveTab} /> */}
 
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
-        {/* <ReportFilterForm projectOptions={projectOptions} onSubmit={handleSearch} />
-       <ReportHeaderActions rows={filteredRows} /> */}
-       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-4">
-  {/* Left side: Filter + Search */}
-  <div className="w-full">
-    <ReportFilterForm projectOptions={projectOptions} onSubmit={handleSearch} />
-  </div>
+      {/* FILTER + EXPORT BUTTONS */}
+      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
+        {/* Filters */}
+        <div className="flex-1">
+          <ReportFilterForm projectOptions={projectOptions} onSubmit={handleSearch} />
+        </div>
 
-  {/* Right side: PDF & Excel Buttons */}
-  <div className="flex items-end gap-2">
-    <ReportHeaderActions  rows={filteredRows} />
-  </div>
-</div>
-
-       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-4">
-
-</div>
-
+        {/* Export Buttons */}
+        <div className="flex items-center gap-2 mt-4 lg:mt-0">
+          <ReportHeaderActions rows={filteredRows} />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      {/* CHARTS */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-6">
         <div className="lg:col-span-8">
           <ColumnChart config={columnChartConfig} />
         </div>
@@ -135,9 +133,11 @@ const Reports = () => {
         </div>
       </div>
 
+      {/* TABLE */}
       <ReportTable rows={filteredRows} />
     </div>
   );
 };
 
 export default Reports;
+
