@@ -96,15 +96,13 @@ const FormikDatePicker = ({
   const hasError = meta.touched && meta.error;
 
   return (
-    <div className="mb-4 relative">
-      {/* Label */}
+    <div className="w-full">
       {label && (
         <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
           {label}
         </label>
       )}
 
-      {/* Input + Icon */}
       <div className="relative">
         <ReactDatePicker
           selected={field.value ? new Date(field.value) : null}
@@ -112,16 +110,15 @@ const FormikDatePicker = ({
           dateFormat={dateFormat}
           minDate={minDate}
           maxDate={maxDate}
-          className={`w-full px-3 py-2 pl-10 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 
+          className={`h-10 px-3 pl-10 rounded-md border text-sm
             ${hasError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-green-600"} 
+            focus:outline-none focus:ring-2
             bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white`}
           {...props}
         />
 
-        {/* Calendar Icon */}
         <CalendarIcon className="w-5 h-5 text-gray-400 absolute left-3 top-2.5 pointer-events-none" />
 
-        {/* Clear Button */}
         {showClearButton && field.value && (
           <button
             type="button"
@@ -134,7 +131,6 @@ const FormikDatePicker = ({
         )}
       </div>
 
-      {/* Error Message */}
       {hasError && (
         <p className="text-sm text-red-500 mt-1">{meta.error}</p>
       )}
