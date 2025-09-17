@@ -110,18 +110,23 @@ const Reports = () => {
     <div className="p-6">
       <HeaderTitle title="Report Dashboard" />
 
-      {/* FILTER + EXPORT BUTTONS */}
-      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
-        {/* Filters */}
-        <div className="flex-1">
-          <ReportFilterForm projectOptions={projectOptions} onSubmit={handleSearch} />
-        </div>
+<div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow mb-6">
+  <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+    {/* Filters */}
+    <div className="flex flex-wrap gap-4 items-end">
+      <ReportFilterForm
+        projectOptions={projectOptions}
+        onSubmit={handleSearch}
+        compact
+      />
+    </div>
 
-        {/* Export Buttons */}
-        <div className="flex items-center gap-2 mt-4 lg:mt-0">
-          <ReportHeaderActions rows={filteredRows} />
-        </div>
-      </div>
+    {/* Export Buttons */}
+    <div className="flex gap-2 justify-end items-center">
+      <ReportHeaderActions rows={filteredRows} />
+    </div>
+  </div>
+</div>
 
       {/* CHARTS */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-6">

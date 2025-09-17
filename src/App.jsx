@@ -143,7 +143,6 @@ import AdminDashboard from "./Pages/admin/AdminDahboard";
 import Report from "./Pages/admin/Report";
 import Employee from "./Pages/admin/Employee";
 import Customer from "./Pages/admin/customer/Customer";
-import Team from "./Pages/admin/Team";
 
 // Manager + Shared Pages
 // import Projects from "./Pages/common/Projects";
@@ -157,6 +156,8 @@ import EmployeeDashboard from "./Pages/employee/EmployeeDashboard";
 import Reports from "./Pages/admin/report/Reports";
 import TimeSheetTracker from "./Pages/manager/TimeSheetTracker";
 import Projects from "./components/common/Projects";
+import TeamAdmin from "./Pages/admin/TeamAdmin";
+import Teams from "./Pages/manager/Teams";
 
 // -------------------------------------
 // Protected Route Component
@@ -183,10 +184,10 @@ const App = () => {
     <AuthProvider>
       <Routes>
 
-        {/* ✅ Public Route */}
+        {/*  Public Route */}
         <Route path="/login" element={<LogIn />} />
 
-        {/* ✅ Admin Routes */}
+        {/*  Admin Routes */}
         <Route
           path="/admin/*"
           element={
@@ -200,11 +201,11 @@ const App = () => {
           <Route path="employees" element={<Employee />} />
           <Route path="customers" element={<Customer />} />
           <Route path="projects" element={<Projects />} />
-          <Route path="teams/:teamId" element={<Team />} />
+          <Route path="teams/:teamId" element={<TeamAdmin />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
         </Route>
 
-        {/* ✅ Manager Routes */}
+        {/* Manager Routes */}
         <Route
           path="/manager/*"
           element={
@@ -215,13 +216,13 @@ const App = () => {
         >
           <Route path="dashboard" element={<ManagerDashboard />} />
           <Route path="report" element={<div>Manager reports</div>} />
-          <Route path="team" element={<div>Team Details</div>} />
+          <Route path="team" element={<Teams/>} />
           <Route path="time-tracker" element={<TimeTracking />} />
           <Route path="projects" element={<Projects />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
         </Route>
 
-        {/* ✅ User Routes */}
+        
         <Route
           path="/user/*"
           element={
@@ -237,7 +238,7 @@ const App = () => {
           <Route path="project-details/:id" element={<ProjectDetails />} />
         </Route>
 
-        {/* ✅ Fallback - Catch-all Route */}
+        {/*  Fallback - Catch-all Route */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </AuthProvider>
