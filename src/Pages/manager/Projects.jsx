@@ -30,12 +30,25 @@ const Projects = () => {
       ? GET_PROJECTS_BY_USER_ID
       : GET_ALL_PROJECTS_DETAILS;
 
+  // const projects = useAxios(
+  //   API,
+  //   { params: { _limit: 5 } },
+  //   true,
+  //   [isCreateUpdate]
+  // );
+
   const projects = useAxios(
-    API,
-    { params: { _limit: 5 } },
-    true,
-    [isCreateUpdate]
-  );
+  API,
+  {
+    params:
+      auth.role === "Admin"
+        ? {} // Don't send department if admin
+        : { department: auth?.department }, // Only for manager/user
+  },
+  true,
+  [isCreateUpdate]
+);
+
 
   const handleAddClick = (e) => {
     e.preventDefault();
