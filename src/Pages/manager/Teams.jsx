@@ -6,6 +6,7 @@ import useAxios from "../../hooks/useAxios";
 import useAuth from "../../hooks/useAuth";
 import TeamForm from "../../components/common/TeamForm";
 
+
 const Team = () => {
   const { auth } = useAuth();
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ const Team = () => {
             {team.map((member) => (
               <div key={member.EmpId} className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden flex flex-col">
                 <div className="flex items-center px-4 py-3 border-b">
-                  <img
+                  {/* <img
 
                     src={
                       member.Photo
@@ -72,8 +73,17 @@ const Team = () => {
                     }
                     alt={member.FirstName}
                      className="w-10 h-10 rounded-full mr-3"
-                  />
+                  /> */}
+                  <img
+                    src={
+                      member.Photo
+                        ? `${import.meta.env.VITE_BASE_API_URL.replace('/api', '')}/uploads/${member.Photo}`
+                        : "/assets/images/team-1.jpg"
+                    }
 
+                    alt={member.FirstName}
+                    className="w-10 h-10 rounded-full mr-3"
+                  />
 
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
