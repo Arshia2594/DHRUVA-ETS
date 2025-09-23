@@ -9,6 +9,7 @@ import useAuth from "./hooks/useAuth";
 import PropTypes from "prop-types";
 import "./index.css";
 
+
 // Layout
 import RoleBasedDashboardLayout from "./components/layout/RoleBasedDashboardLayout";
 
@@ -26,7 +27,7 @@ import Customer from "./Pages/admin/customer/Customer";
 
 import ProjectDetails from "./components/common/ProjectDetails";
 import ManagerDashboard from "./Pages/manager/ManagerDashboard";
-import TimeTracking from "./Pages/manager/TimeSheetTracker";
+import TimeTracking from "./Pages/employee/TimeTracking";
 
 // Employee Pages
 import EmployeeDashboard from "./Pages/employee/EmployeeDashboard";
@@ -95,7 +96,7 @@ const App = () => {
           <Route path="dashboard" element={<ManagerDashboard />} />
           <Route path="report" element={<div>Manager reports</div>} />
           <Route path="team" element={<Teams/>} />
-          <Route path="time-tracker" element={<TimeTracking />} />
+          <Route path="time-tracker" element={<TimeSheetTracker />} />
           <Route path="projects" element={<Projects />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
           <Route path="team-details/:empId" element={<TeamDetails />} />
@@ -113,7 +114,7 @@ const App = () => {
         >
           <Route path="dashboard" element={<EmployeeDashboard />} />
           <Route path="report" element={<Reports />} />
-          <Route path="time-tracker" element={<TimeSheetTracker />} />
+          <Route path="time-tracker" element={<TimeTracking />} />
           <Route path="projects" element={<Projects />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
         </Route>

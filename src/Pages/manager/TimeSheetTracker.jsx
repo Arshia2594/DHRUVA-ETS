@@ -65,7 +65,9 @@ const TimeSheetTracker = () => {
     { headerName: "Date", field: "WorkDate" },
     { headerName: "Project Name", field: "ProjectName" },
     { headerName: "Title", field: "WorkTitle" },
-    { headerName: "Manager Approval", field: "ManagerApproval" },
+    // { headerName: "Manager Approval", field: "ManagerApproval" },
+    // {headerName:"Employee Name ",field:"employee Name"},
+    // {headerName:" Role",field:"role"},
     { headerName: "Duration (hours)", field: "TotalTimeSpent" },
   ];
 

@@ -1,6 +1,9 @@
 
-// import React, { useState } from "react";
-// import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
+import React, { useState } from "react";
+ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
+import axiosInstance from "../common/AxiosInstance";
+
+// import { useState } from "react";
 
 // const CollapsibleTable = ({ columns, data, collapsibleFields, keyField }) => {
 //   const [openRows, setOpenRows] = useState({});
@@ -15,7 +18,7 @@
 //   return (
 //     <div className="overflow-x-auto border rounded-lg shadow-md bg-white dark:bg-gray-900">
 //       <table className="min-w-full text-sm text-gray-800 dark:text-gray-100">
-//         <thead className="bg-teal-600 text-white text-left">
+//         <thead className="bg-green-700 text-white text-left">
 //           <tr>
 //             <th className="px-3 py-3 w-10"></th>
 //             <th className="px-4 py-3">Sr. No.</th>
@@ -29,11 +32,11 @@
 //         <tbody>
 //           {data.map((row, index) => (
 //             <React.Fragment key={row[keyField]}>
-//               <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-teal-50 dark:hover:bg-gray-800">
+//               <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-gray-800">
 //                 <td className="px-3 py-2">
 //                   <button
 //                     onClick={() => handleToggleRow(row[keyField])}
-//                     className="text-gray-600 dark:text-gray-300 hover:text-teal-500"
+//                     className="text-gray-600 dark:text-gray-300 hover:text-green-600"
 //                     aria-label="Toggle Row"
 //                   >
 //                     {openRows[row[keyField]] ? (
@@ -80,13 +83,11 @@
 //   );
 // };
 
-
 // export default CollapsibleTable;
 
-import React, { useState } from "react";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 
-const CollapsibleTable = ({ columns, data, collapsibleFields, keyField }) => {
+
+const CollapsibleTable = ({ columns, data, collapsibleFields, keyField, refetch, isManager = false }) => {
   const [openRows, setOpenRows] = useState({});
 
   const handleToggleRow = (key) => {
@@ -96,6 +97,17 @@ const CollapsibleTable = ({ columns, data, collapsibleFields, keyField }) => {
     }));
   };
 
+  const handleApproval = async (timesheetId, status) => {
+    try {
+      await axiosInstance.put(`/empTimesheet/manager/approve-timesheet/${timesheetId}`, {
+        approvalStatus: status,
+      });
+      refetch();
+    } catch (error) {
+      console.error("Approval failed:", error);
+    }
+  };
+
   return (
     <div className="overflow-x-auto border rounded-lg shadow-md bg-white dark:bg-gray-900">
       <table className="min-w-full text-sm text-gray-800 dark:text-gray-100">
@@ -103,10 +115,8 @@ const CollapsibleTable = ({ columns, data, collapsibleFields, keyField }) => {
           <tr>
             <th className="px-3 py-3 w-10"></th>
             <th className="px-4 py-3">Sr. No.</th>
-            {columns.map((column) => (
-              <th key={column.field} className="px-4 py-3">
-                {column.headerName}
-              </th>
+            {columns.map((col) => (
+              <th key={col.field} className="px-4 py-3">{col.headerName}</th>
             ))}
           </tr>
         </thead>
@@ -118,7 +128,6 @@ const CollapsibleTable = ({ columns, data, collapsibleFields, keyField }) => {
                   <button
                     onClick={() => handleToggleRow(row[keyField])}
                     className="text-gray-600 dark:text-gray-300 hover:text-green-600"
-                    aria-label="Toggle Row"
                   >
                     {openRows[row[keyField]] ? (
                       <ChevronUpIcon className="h-5 w-5" />
@@ -128,9 +137,43 @@ const CollapsibleTable = ({ columns, data, collapsibleFields, keyField }) => {
                   </button>
                 </td>
                 <td className="px-4 py-2 font-medium">{index + 1}</td>
-                {columns.map((column) => (
-                  <td key={column.field} className="px-4 py-2">
-                    {row[column.field]}
+
+                {columns.map((col) => (
+                  <td key={col.field} className="px-4 py-2">
+                    {col.field === "ManagerApproval" && isManager ? (
+                      <div className="flex flex-col gap-2">
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${
+                            row.ManagerApproval === "Approved"
+                              ? "bg-green-100 text-green-700"
+                              : row.ManagerApproval === "Rejected"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {row.ManagerApproval}
+                        </span>
+
+                        {row.ManagerApproval === "Pending" && (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleApproval(row.TimeSheetId, "Approved")}
+                              className="text-green-600 hover:text-green-800 text-xs"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => handleApproval(row.TimeSheetId, "Rejected")}
+                              className="text-red-600 hover:text-red-800 text-xs"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      row[col.field]
+                    )}
                   </td>
                 ))}
               </tr>
@@ -163,5 +206,4 @@ const CollapsibleTable = ({ columns, data, collapsibleFields, keyField }) => {
     </div>
   );
 };
-
 export default CollapsibleTable;
