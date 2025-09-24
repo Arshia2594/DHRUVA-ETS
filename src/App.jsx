@@ -27,6 +27,7 @@ import Customer from "./Pages/admin/customer/Customer";
 
 import ProjectDetails from "./components/common/ProjectDetails";
 import ManagerDashboard from "./Pages/manager/ManagerDashboard";
+import ManagerReport from "./Pages/manager/ManagerReport";
 import TimeTracking from "./Pages/employee/TimeTracking";
 
 // Employee Pages
@@ -94,7 +95,7 @@ const App = () => {
           }
         >
           <Route path="dashboard" element={<ManagerDashboard />} />
-          <Route path="report" element={<div>Manager reports</div>} />
+          <Route path="report" element={<ManagerReport/>} />
           <Route path="team" element={<Teams/>} />
           <Route path="time-tracker" element={<TimeSheetTracker />} />
           <Route path="projects" element={<Projects />} />
