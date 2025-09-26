@@ -139,13 +139,13 @@
 
 
 import React from "react";
-import { useNavigate } from "react-router-dom";   // 👈 navigate import
-import { useAuth } from "../../context/AuthContext"; // 👈 auth context import
+import { useNavigate } from "react-router-dom";   
+import { useAuth } from "../../context/AuthContext"; 
 import useAxios from "../../hooks/useAxios";
 
 const ProjectSummary = () => {
-  const { auth } = useAuth();        // 👈 use inside component
-  const navigate = useNavigate();    // 👈 use inside component
+  const { auth } = useAuth();       
+  const navigate = useNavigate();    
 
   // Project Status Summary API
   const {
@@ -153,11 +153,6 @@ const ProjectSummary = () => {
     loading: summaryLoading,
     error: summaryError,
   } = useAxios("/project/get-project-statuswise-counts", {}, true, {});
-
-  // Debug API response
-  React.useEffect(() => {
-    console.log("Project Summary API Response:", projectSummary);
-  }, [projectSummary]);
 
   // Upcoming Deadlines API
   const {
