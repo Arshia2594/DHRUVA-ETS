@@ -14,10 +14,33 @@ import {
 } from "@heroicons/react/24/outline";
 
 import MDAvatarGroup from "./MDAvatarGroup";
+import FilterableCollapsibleTable from "../HOC/FilterableCollapsibleTable";
 
 const ProjectDetails = () => {
   const { id } = useParams(); // 🆔 Get project ID from route
   const { data: project, loading, error } = useAxios(`/project/get-project-by-id/${id}`);
+
+  const {
+    data: workHistory = [],
+    loading: historyLoading,
+    error: historyError,
+  } = useAxios(`/project/${id}/work-history`, {}, true, [id]);
+
+   const columns = [
+    { headerName: "Date", field: "WorkDate" },
+    { headerName: "Employee", field: "EmployeeName" },
+    { headerName: "Title", field: "WorkTitle" },
+    { headerName: "Status", field: "TaskStatus" },
+    { headerName: "Approval", field: "ManagerApproval" },
+    { headerName: "Time Spent (hrs)", field: "TotalTimeSpent" },
+  ];
+
+   // format data for table
+const formattedHistory = workHistory.map((entry) => ({
+  ...entry,
+  EmployeeName: entry.EmployeeName || "N/A", // backend से मिला हुआ use करो
+}));
+
 
   const avatars = [
     { src: avatar1, alt: "Avatar 1", name: "Priyanka" },
@@ -89,11 +112,30 @@ const ProjectDetails = () => {
         </div>
 
         {/* Work History */}
-        <hr className="my-6 border-t" />
+        {/* <hr className="my-6 border-t" />
         <h3 className="font-semibold mb-4">Work History</h3>
 
      
-        <div className="text-gray-500 italic">No work history data yet.</div>
+        <div className="text-gray-500 italic">No work history data yet.</div> */}
+
+           <hr className="my-6 border-t" />
+      <h3 className="font-semibold mb-4">Work History</h3>
+
+      {historyLoading ? (
+        <p>Loading work history...</p>
+      ) : historyError ? (
+        <p className="text-red-500">Failed to load work history</p>
+      ) : formattedHistory.length > 0 ? (
+        <FilterableCollapsibleTable
+          columns={columns}
+          data={formattedHistory}
+          collapsibleFields={["WorkDetails", "WorkStartTime", "WorkEndTime"]}
+          keyField="TimeSheetId"
+          filterFields={["WorkDate", "EmployeeName", "ManagerApproval"]}
+        />
+      ) : (
+        <p className="text-gray-500 italic">No work history data yet.</p>
+      )}
       </div>
     </div>
   );

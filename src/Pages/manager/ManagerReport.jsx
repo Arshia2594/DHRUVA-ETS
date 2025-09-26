@@ -10,7 +10,6 @@ const Report = () => {
       {/* Show Project Summary Section */}
       <ProjectSummary />
 
-      {/* Later you can add more sections (Employee Timesheet, Charts, etc.) */}
     </div>
   );
 };
