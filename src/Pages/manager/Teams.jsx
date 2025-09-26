@@ -30,17 +30,15 @@ const Team = () => {
   //   const role = auth?.role?.toLowerCase();
   //   navigate(`/${role}/team-details/${empId}`);
   // };
-  const handleView = (empId) => {
+
+  const handleView = (empId,showTimeSheet=false) => {
   const role = auth?.role?.toLowerCase();
-  navigate(`/${role}/team-details/${empId}`, { state: { isManager: role === "manager" } });
+  navigate(`/${role}/team-details/${empId}`, 
+    { state: { isManager: role === "manager" ,
+      showTimeSheet,
+    } });
 };
 
-
-
-  // const handleAddClick = () => {
-  //   setObjectToEdit(null);
-  //   setIsCreateUpdate(true);
-  // };
 
   const handleEditClick = (member) => {
     setObjectToEdit(member);
@@ -85,6 +83,7 @@ const Team = () => {
               return (
                 <div
                   key={member.EmpId}
+                  onClick={()=>handleView(member.EmpId,true)}
                   className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden flex flex-col transition hover:shadow-lg"
                 >
                   {/* Card Header with Image & Name */}
@@ -120,9 +119,10 @@ const Team = () => {
                   </div>
 
                   {/* Card Footer with Actions */}
-                  <div className="px-4 py-3 border-t bg-gray-50 dark:bg-gray-700 dark:border-gray-600 flex justify-between">
+                  <div className="px-4 py-3 border-t bg-gray-50 dark:bg-gray-700 dark:border-gray-600 flex justify-between"
+                      onClick={(e) => e.stopPropagation()} >
                     <button
-                      onClick={() => handleView(member.EmpId)}
+                      onClick={() => handleView(member.EmpId,false)}
                       className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 transition"
                     >
                       <FaEye /> View
