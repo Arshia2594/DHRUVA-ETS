@@ -39,9 +39,9 @@ import TeamAdmin from "./Pages/admin/TeamAdmin";
 import Teams from "./Pages/manager/Teams";
 import TeamDetails from "./components/common/TeamDetail";
 
-// -------------------------------------
+
 // Protected Route Component
-// -------------------------------------
+
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { auth } = useAuth();
   console.log("PROTECTED ROUTE - ROLE CHECK:", auth.role, "Allowed:", allowedRoles);
@@ -56,9 +56,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   return children;
 };
 
-// -------------------------------------
+
 //  Main App Component
-// -------------------------------------
+
 const App = () => {
   return (
     <AuthProvider>
@@ -120,7 +120,7 @@ const App = () => {
           <Route path="project-details/:id" element={<ProjectDetails />} />
         </Route>
 
-        {/*  Fallback - Catch-all Route */}
+        
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </AuthProvider>
