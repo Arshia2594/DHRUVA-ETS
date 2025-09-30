@@ -1,10 +1,94 @@
-import React from "react";
+
+import { useState, useEffect } from "react";
+import useAxios from "../../hooks/useAxios";
+import useAuth from "../../hooks/useAuth";
+import UpcomingDeadlines from "../../components/manager/UpcomingDeadlines";
+import TimesheetSummary from "../../components/manager/TimesheetSummary";
+import RecentEntriesTable from "../../components/manager/RecentEntriesTable";
+import { adaptProjects, adaptEntries, adaptSummary } from "../../utils/adapters";
+
+const KpiCard = ({ title, value, color }) => (
+  <div className={`rounded-2xl p-4 shadow-md ${color}`}>
+    <p className="text-sm text-gray-700">{title}</p>
+    <h2 className="text-2xl font-bold">{value}</h2>
+  </div>
+);
 
 const ManagerDashboard = () => {
+  const { auth } = useAuth();
+
+  // week range state (YYYY-MM-DD)
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  useEffect(() => {
+    if (!auth?.empId) return;
+
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
+
+    setStartDate(startOfWeek.toISOString().split("T")[0]);
+    setEndDate(endOfWeek.toISOString().split("T")[0]);
+  }, [auth?.empId]);
+
+  // API calls
+  const { data: rawStatus = {}, loading: loadingStatus, error: errorStatus } =
+    useAxios("/project/get-project-statuswise-counts", { method: "GET" }, !!auth?.empId, [auth?.empId]);
+
+  const { data: rawDeadlines = [], loading: loadingDeadlines, error: errorDeadlines } =
+    useAxios("/project/get-upcoming-deadlines", { method: "GET" }, !!auth?.empId, [auth?.empId]);
+
+  const { data: rawSummary = {}, loading: loadingTimesheet, error: errorTimesheet } =
+  useAxios("/empTimesheet/summary", {
+    method: "GET",
+    params: { startDate, endDate },
+  }, !!(startDate && endDate), [startDate, endDate]);
+
+
+  const { data: rawEntries = [], loading: loadingRecent, error: errorRecent } =
+    useAxios("/empTimesheet/get-recent",
+      { method: "GET", params: { limit: 5 } },
+      !!auth?.empId,
+      [auth?.empId]
+    );
+
+    useEffect(() => {
+  console.log("RAW ENTRIES FROM API:", rawEntries);
+}, [rawEntries]);
+
+  // Adapt API data
+  const statusCount = rawStatus;
+  const projects = adaptProjects(rawDeadlines);
+  const entries = adaptEntries(rawEntries);
+  const summary = adaptSummary(rawSummary);
+
+  const loading = loadingStatus || loadingDeadlines || loadingTimesheet || loadingRecent;
+  const error = errorStatus || errorDeadlines || errorTimesheet || errorRecent;
+
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (error) return <div className="p-6 text-red-500">Error loading dashboard</div>;
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Manager Dashboard</h1>
-    
+    <div className="space-y-6 p-6">
+      {/* Row 1: KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <KpiCard title="Pending" value={statusCount?.Pending || 0} color="bg-yellow-100" />
+        <KpiCard title="In Progress" value={statusCount?.InProgress || statusCount?.In_Progress || 0} color="bg-blue-100" />
+        <KpiCard title="Completed" value={statusCount?.Completed || 0} color="bg-green-100" />
+        <KpiCard title="Total" value={statusCount?.Total || 0} color="bg-purple-100" />
+      </div>
+
+      {/* Row 2: Deadlines + Timesheet Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <UpcomingDeadlines projects={projects} />
+        <TimesheetSummary summary={summary} />
+      </div>
+
+      {/* Row 3: Recent Timesheets */}
+      <RecentEntriesTable entries={entries} />
     </div>
   );
 };
