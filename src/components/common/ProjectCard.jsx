@@ -84,14 +84,32 @@ const ProjectCard = ({ projects = [], role = "manager", onEdit }) => {
             </div>
 
             <div className="flex justify-between items-center mt-4">
-              <MDAvatarGroup
+              {/* <MDAvatarGroup
                 avatars={project?.Members?.map((member, index) => ({
                   name: member.FirstName,
                   src: index % 2 === 0 ? avatars[0].src : avatars[1].src,
                 }))}
                 max={3}
                 size="medium"
-              />
+              /> */}
+             <MDAvatarGroup
+  avatars={project?.Members?.map((member) => {
+    const imageUrl =
+      typeof member?.Photo === "string" && member.Photo !== ""
+        ? `${import.meta.env.VITE_BASE_API_URL.replace("/api", "")}/uploads/${member.Photo}`
+        : "/assets/images/team-1.jpg";
+
+    return {
+      name: `${member.FirstName} ${member.LastName}`,
+      src: imageUrl,
+    };
+  })}
+  max={3}
+  size="medium"
+/>
+
+
+
               <span
                 className={`text-xs px-3 py-1 rounded-full text-white ${getStatusColor(
                   project.CompletionStatus

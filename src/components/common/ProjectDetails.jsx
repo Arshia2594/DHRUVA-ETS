@@ -38,8 +38,9 @@ const ProjectDetails = () => {
    // format data for table
 const formattedHistory = workHistory.map((entry) => ({
   ...entry,
-  EmployeeName: entry.EmployeeName || "N/A", // backend से मिला हुआ use करो
+  EmployeeName: entry.EmployeeName || "N/A", 
 }));
+
 
 
   const avatars = [
@@ -102,13 +103,17 @@ const formattedHistory = workHistory.map((entry) => ({
         {/* Avatar Group */}
         <div className="mt-4 flex justify-end">
           <MDAvatarGroup
-            avatars={project.Members?.map((m, i) => ({
-              name: m.FirstName,
-              src: i % 2 === 0 ? avatars[0].src : avatars[1].src,
-            }))}
-            max={5}
-            size="large"
-          />
+  avatars={project.Members?.map((m) => ({
+    name: `${m.FirstName} ${m.LastName}`,
+    src: m.Photo
+      ? `${import.meta.env.VITE_BASE_API_URL.replace("/api", "")}/uploads/${m.Photo}`
+      : "/assets/images/team-1.jpg",
+  })) || []}
+  max={5}
+  size="large"
+/>
+
+
         </div>
 
         {/* Work History */}
