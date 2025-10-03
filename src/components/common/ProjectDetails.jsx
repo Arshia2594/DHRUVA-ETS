@@ -17,7 +17,7 @@ import MDAvatarGroup from "./MDAvatarGroup";
 import FilterableCollapsibleTable from "../HOC/FilterableCollapsibleTable";
 
 const ProjectDetails = () => {
-  const { id } = useParams(); // 🆔 Get project ID from route
+  const { id } = useParams(); //  Get project ID from route
   const { data: project, loading, error } = useAxios(`/project/get-project-by-id/${id}`);
 
   const {
@@ -25,6 +25,8 @@ const ProjectDetails = () => {
     loading: historyLoading,
     error: historyError,
   } = useAxios(`/project/${id}/work-history`, {}, true, [id]);
+
+ 
 
    const columns = [
     { headerName: "Date", field: "WorkDate" },
@@ -101,20 +103,26 @@ const formattedHistory = workHistory.map((entry) => ({
         </div>
 
         {/* Avatar Group */}
-        <div className="mt-4 flex justify-end">
-          <MDAvatarGroup
-  avatars={project.Members?.map((m) => ({
-    name: `${m.FirstName} ${m.LastName}`,
-    src: m.Photo
-      ? `${import.meta.env.VITE_BASE_API_URL.replace("/api", "")}/uploads/${m.Photo}`
-      : "/assets/images/team-1.jpg",
-  })) || []}
-  max={5}
-  size="large"
-/>
+       <div className="mt-4 flex justify-end">
+  <MDAvatarGroup
+    avatars={
+      project.Members?.map((m) => {
+        const hasPhoto = typeof m?.Photo === "string" && m.Photo !== "";
+        const imageUrl = hasPhoto
+          ? `${import.meta.env.VITE_BASE_API_URL.replace("/api", "")}/uploads/${m.Photo}`
+          : null;
 
-
-        </div>
+        return {
+          name: `${m.FirstName} ${m.LastName}`,
+          src: imageUrl,
+          fallback: m.FirstName?.charAt(0).toUpperCase() || "U",
+        };
+      }) || []
+    }
+    max={5}
+    size="large"
+  />
+</div>
 
         {/* Work History */}
         {/* <hr className="my-6 border-t" />

@@ -3,13 +3,6 @@ import React from "react";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import MDAvatarGroup from "./MDAvatarGroup";
-import avatar1 from "../../assets/images/team-1.jpg";
-import avatar2 from "../../assets/images/team-2.jpg";
-
-const avatars = [
-  { src: avatar1, alt: "Avatar 1", name: "Priyanka" },
-  { src: avatar2, alt: "Avatar 2", name: "Shyamala" },
-];
 
 const ProjectCard = ({ projects = [], role = "manager", onEdit }) => {
   const navigate = useNavigate();
@@ -84,31 +77,22 @@ const ProjectCard = ({ projects = [], role = "manager", onEdit }) => {
             </div>
 
             <div className="flex justify-between items-center mt-4">
-              {/* <MDAvatarGroup
-                avatars={project?.Members?.map((member, index) => ({
-                  name: member.FirstName,
-                  src: index % 2 === 0 ? avatars[0].src : avatars[1].src,
-                }))}
+              <MDAvatarGroup
+                avatars={project?.Members?.map((member) => {
+                  const hasPhoto = typeof member?.Photo === "string" && member.Photo !== "";
+                  const imageUrl = hasPhoto
+                    ? `${import.meta.env.VITE_BASE_API_URL.replace("/api", "")}/uploads/${member.Photo}`
+                    : null;
+
+                  return {
+                    name: `${member.FirstName} ${member.LastName}`,
+                    src: imageUrl,
+                    fallback: member.FirstName?.charAt(0).toUpperCase() || "U", 
+                  };
+                })}
                 max={3}
                 size="medium"
-              /> */}
-             <MDAvatarGroup
-  avatars={project?.Members?.map((member) => {
-    const imageUrl =
-      typeof member?.Photo === "string" && member.Photo !== ""
-        ? `${import.meta.env.VITE_BASE_API_URL.replace("/api", "")}/uploads/${member.Photo}`
-        : "/assets/images/team-1.jpg";
-
-    return {
-      name: `${member.FirstName} ${member.LastName}`,
-      src: imageUrl,
-    };
-  })}
-  max={3}
-  size="medium"
-/>
-
-
+              />
 
               <span
                 className={`text-xs px-3 py-1 rounded-full text-white ${getStatusColor(
