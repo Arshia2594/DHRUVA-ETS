@@ -96,18 +96,6 @@ const TimeSheetTracker = () => {
 
           )}
 
-          {/* <CustomTabs
-            tabs={tabsData}
-            value={showCalendarView}
-            onChange={handleTabChange}
-            tabStyles={{
-              default:
-                "relative px-4 py-3 font-medium text-gray-700 dark:text-gray-200 transition-colors duration-200",
-              active: "text-red-700 dark:text-red-400 font-semibold",
-              hover: "hover:text-red-700 dark:hover:text-red-400",
-            }}
-            indicatorColor="bg-red-700"
-          /> */}
           <CustomTabs
             tabs={tabsData}
             value={showCalendarView}
