@@ -36,7 +36,13 @@ const withFilter = (WrappedTable) => {
       <div className="space-y-4 w-full">
         {/* Header & Actions */}
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white">{title}</h2>
+          {/* <h2 className="text-lg font-semibold text-gray-800 dark:text-white">{title}</h2> */}
+          {title && (
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+              {title}
+            </h2>
+          )}
+
 
           <div className="flex items-center gap-3">
             {onAddClick && (
@@ -52,11 +58,10 @@ const withFilter = (WrappedTable) => {
             {filterFields.length > 0 && (
               <button
                 onClick={() => setShowFilters((prev) => !prev)}
-                className={`flex items-center gap-1 px-3 py-2 rounded-md font-medium transition ${
-                  showFilters
+                className={`flex items-center gap-1 px-3 py-2 rounded-md font-medium transition ${showFilters
                     ? "bg-green-700 text-white"
                     : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                }`}
+                  }`}
               >
                 <FunnelIcon className="h-5 w-5" />
                 {showFilters ? "Hide Filters" : "Show Filters"}
@@ -67,9 +72,8 @@ const withFilter = (WrappedTable) => {
 
         {/* Filter Section */}
         <div
-          className={`transition-all duration-300 ease-in-out overflow-hidden ${
-            showFilters ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`transition-all duration-300 ease-in-out overflow-hidden ${showFilters ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           {showFilters && (
             <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg space-y-4 border border-green-700 dark:border-green-600">

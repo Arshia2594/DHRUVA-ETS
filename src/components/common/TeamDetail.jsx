@@ -40,7 +40,7 @@ const TeamDetails = () => {
 
   return (
     <div className="p-6 space-y-8">
-      {/* EMPLOYEE DETAILS + EXPERIENCE/EDUCATION/SKILLS (only if showTimeSheet = false) */}
+      {/* EMPLOYEE DETAILS + EXPERIENCE/EDUCATION/SKILLS  */}
       {!showTimeSheet && (
         <>
           {/* EMPLOYEE INFO */}
@@ -166,6 +166,7 @@ const TeamDetails = () => {
             <p className="text-red-500">Failed to fetch timesheet.</p>
           ) : (
             <FilterableCollapsibleTable
+            title={`${empDetails?.FirstName} ${empDetails?.LastName} - Timesheet`}
               columns={columns}
               data={timesheetData}
               collapsibleFields={["WorkDetails", "TaskStatus", "WorkStartTime", "WorkEndTime"]}
