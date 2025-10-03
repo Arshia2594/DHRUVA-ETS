@@ -6,6 +6,7 @@ import UpcomingDeadlines from "../../components/manager/UpcomingDeadlines";
 import TimesheetSummary from "../../components/manager/TimesheetSummary";
 import RecentEntriesTable from "../../components/manager/RecentEntriesTable";
 import { adaptProjects, adaptEntries, adaptSummary } from "../../utils/adapters";
+import { CheckCircleIcon, ClipboardDocumentListIcon, ExclamationCircleIcon, FolderIcon } from "@heroicons/react/24/outline";
 
 const KpiCard = ({ title, value, color }) => (
   <div className={`rounded-2xl p-4 shadow-md ${color}`}>
@@ -74,12 +75,49 @@ const ManagerDashboard = () => {
   return (
     <div className="space-y-6 p-6">
       {/* Row 1: KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <KpiCard title="Pending" value={statusCount?.Pending || 0} color="bg-yellow-100" />
         <KpiCard title="In Progress" value={statusCount?.InProgress || statusCount?.In_Progress || 0} color="bg-blue-100" />
         <KpiCard title="Completed" value={statusCount?.Completed || 0} color="bg-green-100" />
         <KpiCard title="Total" value={statusCount?.Total || 0} color="bg-purple-100" />
-      </div>
+      </div> */}
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Pending */}
+          <div className="rounded-2xl bg-white p-5 shadow-lg border flex items-center gap-4">
+            <ExclamationCircleIcon className="h-8 w-8 text-red-500" />
+            <div>
+              <p className="text-sm font-medium text-gray-600">Pending</p>
+              <p className="text-2xl font-bold text-red-600">{rawStatus?.Pending || 0}</p>
+            </div>
+          </div>
+
+          {/* In Progress */}
+          <div className="rounded-2xl bg-white p-5 shadow-lg border flex items-center gap-4">
+            <ClipboardDocumentListIcon  className="h-8 w-8 text-yellow-500" />
+            <div>
+              <p className="text-sm font-medium text-gray-600">In Progress</p>
+              <p className="text-2xl font-bold text-yellow-600">{rawStatus?.InProgress || 0}</p>
+            </div>
+          </div>
+
+          {/* Completed */}
+          <div className="rounded-2xl bg-white p-5 shadow-lg border flex items-center gap-4">
+            <CheckCircleIcon className="h-8 w-8 text-green-600" />
+            <div>
+              <p className="text-sm font-medium text-gray-600">Completed</p>
+              <p className="text-2xl font-bold text-green-600">{rawStatus?.Completed || 0}</p>
+            </div>
+          </div>
+
+          {/* Total */}
+          <div className="rounded-2xl bg-white p-5 shadow-lg border flex items-center gap-4">
+            < FolderIcon className="h-8 w-8 text-blue-600" />
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total</p>
+              <p className="text-2xl font-bold text-blue-600">{rawStatus?.Total || 0}</p>
+            </div>
+          </div>
+     </div>
 
       {/* Row 2: Deadlines + Timesheet Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
