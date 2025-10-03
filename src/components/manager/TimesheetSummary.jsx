@@ -29,7 +29,7 @@ export default function TimesheetSummary({ summary }) {
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-bold text-lg flex items-center space-x-2">
           <MdInsights className="text-green-600" size={22} />
-          <span>Timesheet Summary</span>
+          <span>Project Summary</span>
         </h3>
         <div className="flex space-x-2">
           <button
