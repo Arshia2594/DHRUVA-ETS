@@ -1,6 +1,4 @@
 
-
-
 import React, { useState } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -19,6 +17,7 @@ import {
   GET_TIMESHEETENTRIES_BY_EMP_ID,
 } from "../../utils/Strings";
 import { createEventFromTask } from "../../utils/Lib";
+import { exportToExcel, exportToPDF } from "../../utils/exportUtils";
 
 const TimesheetSchema = Yup.object().shape({
   workTitle: Yup.string().required("Work title is required"),
@@ -49,8 +48,8 @@ const TimeSheetTracker = () => {
   const calendarEntries = timesheetEntries.loading
     ? []
     : timesheetEntries.data
-      ?.filter((item) => item.ManagerApproval === "Approved")
-      ?.map(createEventFromTask);
+        ?.filter((item) => item.ManagerApproval === "Approved")
+        ?.map(createEventFromTask);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -65,54 +64,70 @@ const TimeSheetTracker = () => {
     { headerName: "Date", field: "WorkDate" },
     { headerName: "Project Name", field: "ProjectName" },
     { headerName: "Title", field: "WorkTitle" },
-    // { headerName: "Manager Approval", field: "ManagerApproval" },
-    // {headerName:"Employee Name ",field:"employee Name"},
-    // {headerName:" Role",field:"role"},
     { headerName: "Duration (hours)", field: "TotalTimeSpent" },
   ];
 
   return (
     <div className="p-4 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <PageTitle
-          title={
-            showCalendarView === 0
-              ? "Timesheet Overview"
-              : "Timesheet Calendar"
-          }
-        />
-        <div className="flex items-center gap-3">
-          {showCalendarView === 0 && (
-            <MUIButton
-              onClick={handleOpen}
-              bgColor="bg-green-600"
-              hoverColor="hover:bg-green-700"
-              className="flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-md"
-            >
-              <PlusCircleIcon className="w-5 h-5" />
-              Add
-            </MUIButton>
+     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+  <PageTitle
+    title={
+      showCalendarView === 0
+        ? "Timesheet Overview"
+        : "Timesheet Calendar"
+    }
+  />
 
-          )}
+  <div className="flex flex-wrap items-center justify-between gap-3 w-full md:w-auto">
+    <CustomTabs
+      tabs={tabsData}
+      value={showCalendarView}
+      onChange={handleTabChange}
+      tabStyles={{
+        default:
+          "relative px-4 py-3 font-medium text-gray-700 dark:text-gray-200 transition-colors duration-200",
+        active: "text-green-700 dark:text-green-400 font-semibold",
+        hover: "hover:text-green-700 dark:hover:text-green-400",
+      }}
+      indicatorColor="bg-green-600"
+    />
 
-          <CustomTabs
-            tabs={tabsData}
-            value={showCalendarView}
-            onChange={handleTabChange}
-            tabStyles={{
-              default:
-                "relative px-4 py-3 font-medium text-gray-700 dark:text-gray-200 transition-colors duration-200",
-              active:
-                "text-green-700 dark:text-green-400 font-semibold",
-              hover:
-                "hover:text-green-700 dark:hover:text-green-400",
-            }}
-            indicatorColor="bg-green-600"  
-          />
+    {showCalendarView === 0 && (
+      <>
+       <div className="flex gap-3 mt-3"> 
+        <MUIButton
+          onClick={handleOpen}
+          bgColor="bg-green-600"
+          hoverColor="hover:bg-green-700"
+          className="flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-md"
+        >
+          <PlusCircleIcon className="w-5 h-5" />
+          Add
+        </MUIButton>
 
+        <MUIButton
+          onClick={() => {
+            if (!timesheetEntries.loading && timesheetEntries.data?.length > 0) {
+              exportToExcel(timesheetEntries.data, "Timesheet.xlsx");
+              exportToPDF(columns, timesheetEntries.data, "Timesheet.pdf");
+            } else {
+              alert("No timesheet data available to export.");
+            }
+          }}
+          bgColor="bg-blue-600"
+          hoverColor="hover:bg-blue-700"
+          className="px-4 py-2 rounded-md text-white"
+        >
+          Download
+        </MUIButton>
         </div>
-      </div>
+      </>
+    )}
+  </div>
+</div>
+
+
+  
 
       {/* Modal */}
       {open && (
@@ -205,10 +220,10 @@ const TimeSheetTracker = () => {
         />
       ) : (
         <CustomizedCalendar events={calendarEntries} />
-         
       )}
     </div>
   );
 };
 
 export default TimeSheetTracker;
+
