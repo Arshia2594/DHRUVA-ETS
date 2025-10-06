@@ -19,6 +19,8 @@ import {
   GET_TIMESHEETENTRIES_BY_EMP_ID,
 } from "../../utils/Strings";
 import { createEventFromTask } from "../../utils/Lib";
+import { exportToExcel, exportToPDF } from "../../utils/exportUtils";
+
 
 const TimesheetSchema = Yup.object().shape({
   workTitle: Yup.string().required("Work title is required"),
@@ -81,7 +83,10 @@ const TimeTracking = () => {
           }
         />
         <div className="flex items-center gap-3">
+          
           {showCalendarView === 0 && (
+            <>
+            <div className="flex gap-3 mt-3">
             <MUIButton
               onClick={handleOpen}
               bgColor="bg-green-600"
@@ -92,20 +97,29 @@ const TimeTracking = () => {
               Add
             </MUIButton>
 
+             <MUIButton
+          onClick={() => {
+            if (!timesheetEntries.loading && timesheetEntries.data?.length > 0) {
+              exportToExcel(timesheetEntries.data, "Timesheet.xlsx");
+              exportToPDF(columns, timesheetEntries.data, "Timesheet.pdf");
+            } else {
+              alert("No timesheet data available to export.");
+            }
+          }}
+          bgColor="bg-blue-600"
+          hoverColor="hover:bg-blue-700"
+          className="px-4 py-2 rounded-md text-white"
+        >
+          Download
+        </MUIButton>
+        </div>
+        </>
+
+            
+
           )}
 
-          {/* <CustomTabs
-            tabs={tabsData}
-            value={showCalendarView}
-            onChange={handleTabChange}
-            tabStyles={{
-              default:
-                "relative px-4 py-3 font-medium text-gray-700 dark:text-gray-200 transition-colors duration-200",
-              active: "text-red-700 dark:text-red-400 font-semibold",
-              hover: "hover:text-red-700 dark:hover:text-red-400",
-            }}
-            indicatorColor="bg-red-700"
-          /> */}
+        
           <CustomTabs
             tabs={tabsData}
             value={showCalendarView}
