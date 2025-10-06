@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 
-// Export PDF (already working)
+// Export PDF 
 export const exportToPDF = (columns, data, fileName = "timesheet.pdf") => {
   if (!data || !columns || data.length === 0 || columns.length === 0) return;
 
