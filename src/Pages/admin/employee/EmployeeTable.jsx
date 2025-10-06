@@ -1,6 +1,3 @@
-
-
-
 import { useState, useEffect } from "react";
 import EmployeeForm from "./EmployeeForm";
 import DataTable from "../../../components/common/DataTable";
@@ -67,39 +64,6 @@ export default function EmployeeTable() {
     setShowForm(true);
   };
 
-
-
-  // const handleView = (employee) => {
-  //   Swal.fire({
-  //     html: `
-  //     <div style="text-align: center;">
-
-  //       <img src="${profileImage}" style="width:100px; height:100px; border-radius:50%; object-fit:cover;" />
-
-  //       <h2 style="font-size: 20px; font-weight: bold; margin: 0;">${employee.Name} ${employee.LastName}</h2>
-  //       <div style="text-align: left; font-size: 14px; padding-top: 10px;">
-  //         <p><strong>Email:</strong> ${employee.Email}</p>
-  //         <p><strong>Mobile:</strong> ${employee.Mobile}</p>
-  //         <p><strong>Role:</strong> ${employee.Role}</p>
-  //         <p><strong>Department:</strong> ${employee.Department}</p>
-  //         <p><strong>Birth Date:</strong> ${employee.BirthDate}</p>
-  //         <p><strong>Gender:</strong> ${employee.Gender}</p>
-  //         <p><strong>Marital Status:</strong> ${employee.MaritalStatus}</p>
-  //         <p><strong>Employee Type:</strong> ${employee.EmployeeType}</p>
-  //         <p><strong>Status:</strong> ${employee.Status}</p>
-  //         <p><strong>Joining Date:</strong> ${employee.JoiningDate}</p>
-  //       </div>
-  //     </div>
-  //   `,
-  //     showConfirmButton: true,
-  //     confirmButtonText: "Close",
-  //     customClass: {
-  //       popup: 'custom-swal-popup',
-  //       confirmButton: 'swal-custom-btn',
-  //     },
-  //     width: 500,
-  //   });
-  // };
   const handleView = (employee) => {
     
   const imageIndex = employee.EmpID % profileImages.length;
