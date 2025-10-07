@@ -2,11 +2,12 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
 import Input from "./Input";
-import DateTimePicker from "./DateTimePicker";
 import FormSelect from "./FormSelect";
-import MultiSelect from "./MultiSelect";
+// import MultiSelect from "./MultiSelect";
 import useAxios from "../../hooks/useAxios";
 import { GET_ALL_NORMAL_USERS } from "../../utils/Strings";
+import FormikMultiSelect from "./FormikMultiSelect";
+import FormikDatePicker from "./FormikDatePicker";
 
 // Initial form state
 const INITIAL_FORM_STATE = {
@@ -95,20 +96,20 @@ const ProjectForm = ({ setIsCreateUpdate, objectToEdit, isCreateUpdate }) => {
                 }
               />
 
-              <MultiSelect
-                name="Members"
-                label="Select Members"
-                options={
-                  users?.data?.map((item) => ({
-                    value: item.EmpId,
-                    label: `${item.FirstName} ${item.LastName}`,
-                  })) || []
-                }
-                value={FORM_STATE.Members}
-              />
+             <FormikMultiSelect
+  name="Members"
+  label="Select Members"
+  options={
+    users?.data?.map((item) => ({
+      value: item.EmpId,
+      label: `${item.FirstName} ${item.LastName}`,
+    })) || []
+  }
+/>
 
-              <DateTimePicker name="ProjectStartDate" label="Start Date" />
-              <DateTimePicker name="ProjectEndDate" label="End Date" />
+<FormikDatePicker name="ProjectStartDate" label="Start Date" />
+<FormikDatePicker name="ProjectEndDate" label="End Date" />
+
             </div>
 
             <div className="flex justify-center mt-8 gap-4">
