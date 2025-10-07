@@ -7,7 +7,7 @@ const withFilter = (WrappedTable) => {
     data = [],
     filterFields = [],
     onAddClick,
-    title = "Table",
+    title = "",
     ...props
   }) {
     const [filters, setFilters] = useState({});
