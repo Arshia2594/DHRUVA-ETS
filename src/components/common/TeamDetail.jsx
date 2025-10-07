@@ -3,6 +3,8 @@ import { useLocation, useParams } from "react-router-dom";
 import useAxios from "../../hooks/useAxios";
 import PageTitle from "../../components/common/PageTitle";
 import FilterableCollapsibleTable from "../../components/HOC/FilterableCollapsibleTable";
+import MUIButton from "../../components/common/MUIButton";
+import { exportToExcel, exportToPDF } from "../../utils/exportUtils";
 
 const TeamDetails = () => {
   const { empId } = useParams();
@@ -157,27 +159,55 @@ const TeamDetails = () => {
       )}
 
       {/* TIMESHEET (only if showTimeSheet = true) */}
-      {showTimeSheet && (
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-          <PageTitle title={`Employee Timesheet`} />
-          {timesheetLoading ? (
-            <p>Loading timesheet...</p>
-          ) : timesheetError ? (
-            <p className="text-red-500">Failed to fetch timesheet.</p>
-          ) : (
-            <FilterableCollapsibleTable
-            title={`${empDetails?.FirstName} ${empDetails?.LastName} - Timesheet`}
-              columns={columns}
-              data={timesheetData}
-              collapsibleFields={["WorkDetails", "TaskStatus", "WorkStartTime", "WorkEndTime"]}
-              keyField="TimeSheetId"
-              filterFields={["WorkDate", "ProjectName", "ManagerApproval"]}
-              refetch={refetchTimesheet}
-              isManager={isManager}
-            />
-          )}
-        </div>
-      )}
+
+{showTimeSheet && (
+  <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 space-y-4">
+    {/* Header Section */}
+   {/* Header Section */}
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div>
+    <PageTitle title="Employee Timesheet" />
+    <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+      {empDetails?.FirstName} {empDetails?.LastName} - Timesheet
+    </h2>
+  </div>
+
+  <MUIButton
+    onClick={() => {
+      if (!timesheetData || timesheetData.length === 0) {
+        alert("No timesheet data available to export.");
+        return;
+      }
+      exportToExcel(timesheetData, "Timesheet.xlsx");
+      exportToPDF(columns, timesheetData, "Timesheet.pdf");
+    }}
+    bgColor="bg-green-600"
+    hoverColor="hover:bg-green-700"
+    className="px-5 py-2 rounded-md text-white shadow-md"
+  >
+    Download PDF / Excel
+  </MUIButton>
+</div>
+    {/* Timesheet Table */}
+    {timesheetLoading ? (
+      <p className="text-gray-500">Loading timesheet...</p>
+    ) : timesheetError ? (
+      <p className="text-red-500">Failed to fetch timesheet.</p>
+    ) : (
+      <FilterableCollapsibleTable
+        columns={columns}
+        data={timesheetData}
+        collapsibleFields={["WorkDetails", "TaskStatus", "WorkStartTime", "WorkEndTime"]}
+        keyField="TimeSheetId"
+        filterFields={["WorkDate", "ProjectName", "ManagerApproval"]}
+        refetch={refetchTimesheet}
+        isManager={isManager}
+      />
+    )}
+  </div>
+)}
+
+
     </div>
   );
 };
