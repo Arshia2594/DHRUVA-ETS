@@ -1,9 +1,10 @@
 import React from "react";
 import useAxios from "../../hooks/useAxios";
 import ProjectSummaryCards from "../../components/manager/ProjectSummaryCards";
-import UpcomingDeadlines from "../../components/manager/UpcomingDeadlines";
+
 import TeamWorkloadSummary from "../../components/manager/TeamWorkloadSummary";
 import AllBudgetUtilizations from "../../components/manager/AllBudgetUtilizations ";
+import UpcomingDeadlinesForReport from "../../components/manager/UpcomingDeadlinesForReport";
 
 const ManagerReport = () => {
   const { data: projectSummary = {}, loading: sLoad, error: sErr } = useAxios("/project/get-project-statuswise-counts");
@@ -22,7 +23,7 @@ const ManagerReport = () => {
       <ProjectSummaryCards summary={projectSummary} />
 
       {/*  Upcoming Deadlines */}
-      <UpcomingDeadlines deadlines={Array.isArray(deadlines) ? deadlines : []} />
+      <UpcomingDeadlinesForReport deadlines={Array.isArray(deadlines) ? deadlines : []} />
 
       {/* Workload & Budget side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
