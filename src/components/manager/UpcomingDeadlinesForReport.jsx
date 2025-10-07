@@ -6,7 +6,7 @@ const UpcomingDeadlinesForReport = ({ deadlines = [] }) => {
   const { auth } = useAuth();
   const navigate = useNavigate();
 
-  // ✅ Currency formatter
+  //  Currency formatter
   const formatCurrency = (amount) =>
     amount
       ? new Intl.NumberFormat("en-IN", {
@@ -16,7 +16,7 @@ const UpcomingDeadlinesForReport = ({ deadlines = [] }) => {
         }).format(amount)
       : "N/A";
 
-  // ✅ Calculate urgency based on end date
+  //  Calculate urgency based on end date
   const getUrgency = (endDate) => {
     const today = new Date();
     const due = new Date(endDate);
@@ -28,7 +28,7 @@ const UpcomingDeadlinesForReport = ({ deadlines = [] }) => {
     return { label: `Due in ${diff} days`, color: "bg-green-400 text-white" };
   };
 
-  // ✅ View handler
+  
   const handleView = (id) => {
     const role = auth?.role?.toLowerCase();
     navigate(`/${role}/project-details/${id}`);
@@ -38,7 +38,7 @@ const UpcomingDeadlinesForReport = ({ deadlines = [] }) => {
     <section>
       <h2 className="text-lg font-bold text-gray-700 mb-4">Upcoming Deadlines</h2>
 
-      {/* ✅ Defensive check to avoid crashes */}
+      {/* Defensive check to avoid crashes */}
       {Array.isArray(deadlines) && deadlines.length === 0 ? (
         <p className="text-gray-500 text-sm">No upcoming project deadlines</p>
       ) : Array.isArray(deadlines) ? (
