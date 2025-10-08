@@ -31,10 +31,10 @@ const FormikDatePicker = ({
           dateFormat={dateFormat}
           minDate={minDate}
           maxDate={maxDate}
-          className={`h-10 px-3 pl-10 rounded-md border text-sm
+          className={`w-full h-10 px-3 pl-10 rounded-md border text-sm
             ${hasError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-green-600"} 
             focus:outline-none focus:ring-2
-            bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white`}
+           bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white`}
           {...props}
         />
 
