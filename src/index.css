@@ -68,3 +68,13 @@ body {
 .rbc-event:hover {
   @apply bg-green-600;
 }
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+.filter-container {
+  overflow: visible !important;
+  position: relative;
+  z-index: 10;
+}
