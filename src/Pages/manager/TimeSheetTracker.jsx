@@ -1,4 +1,5 @@
 
+
 import React, { useState } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -12,13 +13,19 @@ import PageTitle from "../../components/common/PageTitle";
 import MUIButton from "../../components/common/MUIButton";
 import CustomTabs from "../../components/common/CustomTabs";
 import useAxios from "../../hooks/useAxios";
+import useAuth from "../../hooks/useAuth";
 import {
   CREATE_EMPTIMESHEET,
   GET_TIMESHEETENTRIES_BY_EMP_ID,
+  GET_PROJECTS_BY_USER_ID,
+  GET_PROJECTS_BY_MANAGER_ID,
+  GET_ALL_PROJECTS_DETAILS,
 } from "../../utils/Strings";
 import { createEventFromTask } from "../../utils/Lib";
 import { exportToExcel, exportToPDF } from "../../utils/exportUtils";
+import FilterDatePicker from "../../components/common/FilterDatePicker";
 
+// Validation schema
 const TimesheetSchema = Yup.object().shape({
   workTitle: Yup.string().required("Work title is required"),
   workDescription: Yup.string().required("Work description is required"),
@@ -31,6 +38,24 @@ const TimesheetSchema = Yup.object().shape({
 const TimeSheetTracker = () => {
   const [open, setOpen] = useState(false);
   const [showCalendarView, setShowCalendarView] = useState(0);
+
+  const { auth } = useAuth();
+
+  //  Dynamic project API based on role
+  const projectAPI =
+    auth.role === "Manager"
+      ? GET_PROJECTS_BY_MANAGER_ID
+      : auth.role === "User"
+      ? GET_PROJECTS_BY_USER_ID
+      : GET_ALL_PROJECTS_DETAILS;
+
+  const projectResponse = useAxios(projectAPI, {}, true);
+
+  //  Format options for table filter
+  const filterProjectOptions = (projectResponse?.data ?? []).map((proj) => ({
+    label: proj.ProjectName,
+    value: proj.ProjectName,
+  }));
 
   const timesheetEntries = useAxios(
     GET_TIMESHEETENTRIES_BY_EMP_ID,
@@ -69,67 +94,64 @@ const TimeSheetTracker = () => {
 
   return (
     <div className="p-4 space-y-6">
-     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-  <PageTitle
-    title={
-      showCalendarView === 0
-        ? "Timesheet Overview"
-        : "Timesheet Calendar"
-    }
-  />
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <PageTitle
+          title={
+            showCalendarView === 0
+              ? "Timesheet Overview"
+              : "Timesheet Calendar"
+          }
+        />
 
-  <div className="flex flex-wrap items-center justify-between gap-3 w-full md:w-auto">
-    <CustomTabs
-      tabs={tabsData}
-      value={showCalendarView}
-      onChange={handleTabChange}
-      tabStyles={{
-        default:
-          "relative px-4 py-3 font-medium text-gray-700 dark:text-gray-200 transition-colors duration-200",
-        active: "text-green-700 dark:text-green-400 font-semibold",
-        hover: "hover:text-green-700 dark:hover:text-green-400",
-      }}
-      indicatorColor="bg-green-600"
-    />
+        <div className="flex flex-wrap items-center justify-between gap-3 w-full md:w-auto">
+          <CustomTabs
+            tabs={tabsData}
+            value={showCalendarView}
+            onChange={handleTabChange}
+            tabStyles={{
+              default:
+                "relative px-4 py-3 font-medium text-gray-700 dark:text-gray-200 transition-colors duration-200",
+              active: "text-green-700 dark:text-green-400 font-semibold",
+              hover: "hover:text-green-700 dark:hover:text-green-400",
+            }}
+            indicatorColor="bg-green-600"
+          />
 
-    {showCalendarView === 0 && (
-      <>
-       <div className="flex gap-3 mt-3"> 
-        <MUIButton
-          onClick={handleOpen}
-          bgColor="bg-green-600"
-          hoverColor="hover:bg-green-700"
-          className="flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-md"
-        >
-          <PlusCircleIcon className="w-5 h-5" />
-          Add
-        </MUIButton>
+          {showCalendarView === 0 && (
+            <>
+              <div className="flex gap-3 mt-3">
+                <MUIButton
+                  onClick={handleOpen}
+                  bgColor="bg-green-600"
+                  hoverColor="hover:bg-green-700"
+                  className="flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-md"
+                >
+                  <PlusCircleIcon className="w-5 h-5" />
+                  Add
+                </MUIButton>
 
-        <MUIButton
-          onClick={() => {
-            if (!timesheetEntries.loading && timesheetEntries.data?.length > 0) {
-              exportToExcel(timesheetEntries.data, "Timesheet.xlsx");
-              exportToPDF(columns, timesheetEntries.data, "Timesheet.pdf");
-            } else {
-              alert("No timesheet data available to export.");
-            }
-          }}
-          bgColor="bg-blue-600"
-          hoverColor="hover:bg-blue-700"
-          className="px-4 py-2 rounded-md text-white"
-        >
-          Download
-        </MUIButton>
+                <MUIButton
+                  onClick={() => {
+                    if (!timesheetEntries.loading && timesheetEntries.data?.length > 0) {
+                      exportToExcel(timesheetEntries.data, "Timesheet.xlsx");
+                      exportToPDF(columns, timesheetEntries.data, "Timesheet.pdf");
+                    } else {
+                      alert("No timesheet data available to export.");
+                    }
+                  }}
+                  bgColor="bg-blue-600"
+                  hoverColor="hover:bg-blue-700"
+                  className="px-4 py-2 rounded-md text-white"
+                >
+                  Download
+                </MUIButton>
+              </div>
+            </>
+          )}
         </div>
-      </>
-    )}
-  </div>
-</div>
+      </div>
 
-
-  
-
-      {/* Modal */}
+      {/*  Modal */}
       {open && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 w-full max-w-md rounded-lg shadow-lg p-6 relative">
@@ -203,7 +225,7 @@ const TimeSheetTracker = () => {
         </div>
       )}
 
-      {/* Table or Calendar */}
+      {/* Table or Calendar View */}
       {showCalendarView === 0 ? (
         <FilterableCollapsibleTable
           columns={columns}
@@ -215,7 +237,17 @@ const TimeSheetTracker = () => {
             "WorkEndTime",
           ]}
           keyField={"TimeSheetId"}
-          filterFields={["WorkDate", "ProjectName", "ManagerApproval"]}
+          filterFields={["WorkDate", "ProjectName"]}
+          filterMeta={{
+            ProjectName: {
+              type: "select",
+              options: filterProjectOptions,
+            },
+            WorkDate: {
+              type: "date",
+            },
+          }}
+          FormikDateFilter={FilterDatePicker}
           onAddclick={handleOpen}
         />
       ) : (
@@ -226,4 +258,3 @@ const TimeSheetTracker = () => {
 };
 
 export default TimeSheetTracker;
-
