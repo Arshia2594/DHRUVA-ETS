@@ -67,20 +67,28 @@ const ManagerDashboard = () => {
     [startDate, endDate]
   );
 
-  const {
-    data: rawEntries = [],
-    loading: loadingRecent,
-    error: errorRecent,
-  } = useAxios(
-    "/empTimesheet/get-recent",
-    { method: "GET", params: { limit: 5 } },
-    !!auth?.empId,
-    [auth?.empId]
-  );
+  const departmentId = auth?.departmentId || null;
+const {
+  data: responseEntries = {},
+  loading: loadingRecent,
+  error: errorRecent,
+} = useAxios(
+  "/empTimesheet/get-recent",
+  {
+    method: "GET",
+    params: departmentId ? { limit: 5, departmentId } : {},
+  },
+  !!departmentId, // enabled only if departmentId exists
+  [departmentId]
+);
 
-  //  Data Adapters
-  const projects = adaptProjects(rawDeadlines);
-  const entries = adaptEntries(rawEntries);
+// Extract data correctly from response
+const rawEntries = responseEntries.data || [];
+
+//  Data Adapters
+const projects = adaptProjects(rawDeadlines);
+const entries = adaptEntries(rawEntries);
+
   const summary = rawSummary; 
 
   const loading =
@@ -139,11 +147,9 @@ const ManagerDashboard = () => {
       {/* Row 2: Deadlines + Timesheet Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <UpcomingDeadlines projects={projects} />
-        <TimesheetSummary summary={summary} />
+        <TimesheetSummary summary={rawSummary } />
       </div>
 
-      {/* Row 3: Recent Timesheet Entries */}
-      <RecentEntriesTable entries={entries} />
     </div>
   );
 };
