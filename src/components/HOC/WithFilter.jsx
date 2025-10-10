@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { FunnelIcon, PlusCircleIcon } from "@heroicons/react/24/solid";
 
@@ -17,7 +16,7 @@ const withFilter = (WrappedTable) => {
     const handleFilterChange = (field, value) => {
       setFilters((prev) => ({
         ...prev,
-        [field]: value?.toLowerCase?.() || value,
+        [field]: value ?? "",
       }));
     };
 
@@ -25,8 +24,21 @@ const withFilter = (WrappedTable) => {
 
     const filteredData = data.filter((row) =>
       filterFields.every((field) => {
-        const rowValue = String(row[field] || "").toLowerCase();
-        const filterValue = (filters[field] || "").toLowerCase();
+        const rowValue = String(row[field] ?? "").toLowerCase();
+        const rawFilter = filters[field];
+        if (!rawFilter || rawFilter === "") return true;
+
+        let filterValue = "";
+        if (typeof rawFilter === "string") {
+          filterValue = rawFilter.toLowerCase();
+        } else if (rawFilter instanceof Date) {
+          filterValue = rawFilter.toISOString().split("T")[0];
+        } else if (rawFilter?.format) {
+          filterValue = rawFilter.format("YYYY-MM-DD");
+        } else {
+          filterValue = String(rawFilter ?? "").toLowerCase();
+        }
+
         return rowValue.includes(filterValue);
       })
     );
@@ -40,6 +52,7 @@ const withFilter = (WrappedTable) => {
               {title}
             </h2>
           )}
+
           <div className="flex items-center gap-3">
             {onAddClick && (
               <button
@@ -50,6 +63,7 @@ const withFilter = (WrappedTable) => {
                 Add
               </button>
             )}
+
             {filterFields.length > 0 && (
               <button
                 onClick={() => setShowFilters((prev) => !prev)}
@@ -66,7 +80,7 @@ const withFilter = (WrappedTable) => {
           </div>
         </div>
 
-     
+        {/* Filter Section */}
         <div
           className={`transition-all duration-300 ease-in-out ${
             showFilters ? "max-h-[600px] opacity-100 mt-2" : "max-h-0 opacity-0"
@@ -76,26 +90,25 @@ const withFilter = (WrappedTable) => {
           {showFilters && (
             <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-5 space-y-4 relative">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {filterFields.map((field) => {
+                {filterFields.map((field, idx) => {
                   const meta = filterMeta[field] || {};
                   const type = meta.type || "text";
 
+                  // 🔸 Dropdown filters
                   if (type === "select") {
                     return (
-                      <div key={field}>
+                      <div key={`${field}-${idx}`}>
                         <label className="block text-sm font-medium mb-1 capitalize text-gray-700 dark:text-gray-200">
                           {field}
                         </label>
                         <select
-                          value={filters[field] || ""}
-                          onChange={(e) =>
-                            handleFilterChange(field, e.target.value)
-                          }
+                          value={filters[field] ?? ""}
+                          onChange={(e) => handleFilterChange(field, e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-green-600 focus:outline-none dark:bg-gray-800 dark:text-white"
                         >
                           <option value="">All</option>
-                          {meta.options?.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
+                          {meta.options?.map((opt, optIdx) => (
+                            <option key={`${field}-${opt.value}-${optIdx}`} value={opt.value}>
                               {opt.label}
                             </option>
                           ))}
@@ -104,26 +117,25 @@ const withFilter = (WrappedTable) => {
                     );
                   }
 
+                  // 🔸 Date filters
                   if (type === "date") {
-                    const FormikDateFilter =
-                      props.FormikDateFilter || (() => <p>Missing date</p>);
+                    const FormikDateFilter = props.FormikDateFilter || (() => <p>Missing date</p>);
                     return (
-                      <div key={field}>
+                      <div key={`${field}-${idx}`}>
                         <label className="block text-sm font-medium mb-1 capitalize text-gray-700 dark:text-gray-200">
                           {field}
                         </label>
                         <FormikDateFilter
                           value={filters[field] || ""}
-                          onChange={(dateStr) =>
-                            handleFilterChange(field, dateStr)
-                          }
+                          onChange={(date) => handleFilterChange(field, date)}
                         />
                       </div>
                     );
                   }
 
+                  // 🔸 Text filters
                   return (
-                    <div key={field}>
+                    <div key={`${field}-${idx}`}>
                       <label className="block text-sm font-medium mb-1 capitalize text-gray-700 dark:text-gray-200">
                         {field}
                       </label>
@@ -131,9 +143,7 @@ const withFilter = (WrappedTable) => {
                         type="text"
                         placeholder={`Filter by ${field}`}
                         value={filters[field] || ""}
-                        onChange={(e) =>
-                          handleFilterChange(field, e.target.value)
-                        }
+                        onChange={(e) => handleFilterChange(field, e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-green-600 focus:outline-none dark:bg-gray-800 dark:text-white"
                       />
                     </div>

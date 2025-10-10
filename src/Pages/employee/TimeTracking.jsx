@@ -20,6 +20,7 @@ import {
 } from "../../utils/Strings";
 import { createEventFromTask } from "../../utils/Lib";
 import { exportToExcel, exportToPDF } from "../../utils/exportUtils";
+import FilterDatePicker from "../../components/common/FilterDatePicker";
 
 
 const TimesheetSchema = Yup.object().shape({
@@ -215,18 +216,44 @@ const TimeTracking = () => {
       {/* Table or Calendar */}
       {showCalendarView === 0 ? (
         <FilterableCollapsibleTable
-          columns={columns}
-          data={timesheetEntries.loading ? [] : timesheetEntries.data}
-          collapsibleFields={[
-            "WorkDetails",
-            "TaskStatus",
-            "WorkStartTime",
-            "WorkEndTime",
-          ]}
-          keyField={"TimeSheetId"}
-          filterFields={["WorkDate", "ProjectName", "ManagerApproval"]}
-          onAddclick={handleOpen}
-        />
+  columns={columns}
+  data={timesheetEntries.loading ? [] : timesheetEntries.data}
+  collapsibleFields={[
+    "WorkDetails",
+    "TaskStatus",
+    "WorkStartTime",
+    "WorkEndTime",
+  ]}
+  keyField={"TimeSheetId"}
+  filterFields={["WorkDate", "ProjectName", "ManagerApproval"]}
+  filterMeta={{
+    WorkDate: { type: "date" },
+    ProjectName: {
+      type: "select",
+      options: timesheetEntries.data
+        ? Array.from(
+            new Map(
+              timesheetEntries.data.map((d) => [d.ProjectName, { 
+                label: d.ProjectName, 
+                value: d.ProjectName 
+              }])
+            ).values()
+          )
+        : [],
+    },
+    ManagerApproval: {
+      type: "select",
+      options: [
+        { label: "Pending", value: "Pending" },
+        { label: "Approved", value: "Approved" },
+        { label: "Rejected", value: "Rejected" },
+      ],
+    },
+  }}
+  FormikDateFilter={FilterDatePicker}
+  onAddclick={handleOpen}
+/>
+
       ) : (
         <CustomizedCalendar events={calendarEntries} />
          
