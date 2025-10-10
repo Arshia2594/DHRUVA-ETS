@@ -1,12 +1,11 @@
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import useAxios from "../../hooks/useAxios";
 import HeaderImage from "../../assets/images/Industrial-Automation.jpg";
 import avatar1 from "../../assets/images/team-1.jpg";
 import avatar2 from "../../assets/images/team-2.jpg";
 
-// Heroicons
 import {
   CalendarDaysIcon,
   ClockIcon,
@@ -15,6 +14,7 @@ import {
 
 import MDAvatarGroup from "./MDAvatarGroup";
 import FilterableCollapsibleTable from "../HOC/FilterableCollapsibleTable";
+import FilterDatePicker from "../common/FilterDatePicker"; 
 
 const ProjectDetails = () => {
   const { id } = useParams(); //  Get project ID from route
@@ -26,9 +26,7 @@ const ProjectDetails = () => {
     error: historyError,
   } = useAxios(`/project/${id}/work-history`, {}, true, [id]);
 
- 
-
-   const columns = [
+  const columns = [
     { headerName: "Date", field: "WorkDate" },
     { headerName: "Employee", field: "EmployeeName" },
     { headerName: "Title", field: "WorkTitle" },
@@ -37,13 +35,38 @@ const ProjectDetails = () => {
     { headerName: "Time Spent (hrs)", field: "TotalTimeSpent" },
   ];
 
-   // format data for table
-const formattedHistory = workHistory.map((entry) => ({
-  ...entry,
-  EmployeeName: entry.EmployeeName || "N/A", 
-}));
+  // Format data for table
+  const formattedHistory = workHistory.map((entry) => ({
+    ...entry,
+    EmployeeName: entry.EmployeeName || "N/A",
+  }));
 
+  //  Build dropdown options for Employee filter
+  const employeeOptions = useMemo(() => {
+    const uniqueNames = [...new Set(formattedHistory.map((h) => h.EmployeeName).filter(Boolean))];
+    return uniqueNames.map((name) => ({
+      label: name,
+      value: name,
+    }));
+  }, [formattedHistory]);
 
+  // Filter configuration (Calendar + Dropdown)
+  const filterMeta = useMemo(
+    () => ({
+      WorkDate: { type: "date" }, // calendar
+      EmployeeName: { type: "select", options: employeeOptions },
+      ManagerApproval: {
+        type: "select",
+        options: [
+          { label: "All", value: "" },
+          { label: "Pending", value: "Pending" },
+          { label: "Approved", value: "Approved" },
+          { label: "Rejected", value: "Rejected" },
+        ],
+      },
+    }),
+    [employeeOptions]
+  );
 
   const avatars = [
     { src: avatar1, alt: "Avatar 1", name: "Priyanka" },
@@ -103,55 +126,52 @@ const formattedHistory = workHistory.map((entry) => ({
         </div>
 
         {/* Avatar Group */}
-       <div className="mt-4 flex justify-end">
-  <MDAvatarGroup
-    avatars={
-      project.Members?.map((m) => {
-        const hasPhoto = typeof m?.Photo === "string" && m.Photo !== "";
-        const imageUrl = hasPhoto
-          ? `${import.meta.env.VITE_BASE_API_URL.replace("/api", "")}/uploads/${m.Photo}`
-          : null;
+        <div className="mt-4 flex justify-end">
+          <MDAvatarGroup
+            avatars={
+              project.Members?.map((m) => {
+                const hasPhoto = typeof m?.Photo === "string" && m.Photo !== "";
+                const imageUrl = hasPhoto
+                  ? `${import.meta.env.VITE_BASE_API_URL.replace("/api", "")}/uploads/${m.Photo}`
+                  : null;
 
-        return {
-          name: `${m.FirstName} ${m.LastName}`,
-          src: imageUrl,
-          fallback: m.FirstName?.charAt(0).toUpperCase() || "U",
-        };
-      }) || []
-    }
-    max={5}
-    size="large"
-  />
-</div>
+                return {
+                  name: `${m.FirstName} ${m.LastName}`,
+                  src: imageUrl,
+                  fallback: m.FirstName?.charAt(0).toUpperCase() || "U",
+                };
+              }) || []
+            }
+            max={5}
+            size="large"
+          />
+        </div>
 
-        {/* Work History */}
-        {/* <hr className="my-6 border-t" />
+        {/* Work History Table + Filters */}
+        <hr className="my-6 border-t" />
         <h3 className="font-semibold mb-4">Work History</h3>
 
-     
-        <div className="text-gray-500 italic">No work history data yet.</div> */}
-
-           <hr className="my-6 border-t" />
-      <h3 className="font-semibold mb-4">Work History</h3>
-
-      {historyLoading ? (
-        <p>Loading work history...</p>
-      ) : historyError ? (
-        <p className="text-red-500">Failed to load work history</p>
-      ) : formattedHistory.length > 0 ? (
-        <FilterableCollapsibleTable
-          columns={columns}
-          data={formattedHistory}
-          collapsibleFields={["WorkDetails", "WorkStartTime", "WorkEndTime"]}
-          keyField="TimeSheetId"
-          filterFields={["WorkDate", "EmployeeName", "ManagerApproval"]}
-        />
-      ) : (
-        <p className="text-gray-500 italic">No work history data yet.</p>
-      )}
+        {historyLoading ? (
+          <p>Loading work history...</p>
+        ) : historyError ? (
+          <p className="text-red-500">Failed to load work history</p>
+        ) : formattedHistory.length > 0 ? (
+          <FilterableCollapsibleTable
+            columns={columns}
+            data={formattedHistory}
+            collapsibleFields={["WorkDetails", "WorkStartTime", "WorkEndTime"]}
+            keyField="TimeSheetId"
+            filterFields={["WorkDate", "EmployeeName", "ManagerApproval"]}
+            filterMeta={filterMeta}
+            FormikDateFilter={FilterDatePicker} // 
+          />
+        ) : (
+          <p className="text-gray-500 italic">No work history data yet.</p>
+        )}
       </div>
     </div>
   );
 };
 
 export default ProjectDetails;
+
