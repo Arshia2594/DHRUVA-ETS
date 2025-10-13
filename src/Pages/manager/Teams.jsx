@@ -20,25 +20,24 @@ const Team = () => {
   }, [auth?.empId]);
 
   const {
-    data: team = [],
+    data: apiResponse,
     loading,
     error,
     refetch,
   } = useAxios(endpoint, {}, !!endpoint, [endpoint]);
 
-  // const handleView = (empId) => {
-  //   const role = auth?.role?.toLowerCase();
-  //   navigate(`/${role}/team-details/${empId}`);
-  // };
+  const team = Array.isArray(apiResponse?.data)
+    ? apiResponse.data
+    : Array.isArray(apiResponse)
+    ? apiResponse
+    : [];
 
-  const handleView = (empId,showTimeSheet=false) => {
-  const role = auth?.role?.toLowerCase();
-  navigate(`/${role}/team-details/${empId}`, 
-    { state: { isManager: role === "manager" ,
-      showTimeSheet,
-    } });
-};
-
+  const handleView = (empId, showTimeSheet = false) => {
+    const role = auth?.role?.toLowerCase();
+    navigate(`/${role}/team-details/${empId}`, {
+      state: { isManager: role === "manager", showTimeSheet },
+    });
+  };
 
   const handleEditClick = (member) => {
     setObjectToEdit(member);
@@ -58,86 +57,127 @@ const Team = () => {
         />
       ) : (
         <>
+          {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              My Team
+              My Team{" "}
+              <span className="text-gray-500 text-base ml-2">
+                ({team.length})
+              </span>
             </h2>
-            {/* <button
-              onClick={handleAddClick}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded shadow-md transition duration-200"
-            >
-              <FaPlus /> Add Member
-            </button> */}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {team.map((member) => {
-              const imageUrl =
-                typeof member.Photo === "string" && member.Photo !== ""
-                  ? `${import.meta.env.VITE_BASE_API_URL.replace(
-                      "/api",
-                      ""
-                    )}/uploads/${member.Photo}`
-                  : "/assets/images/team-1.jpg";
+          {/* If team empty */}
+          {team.length === 0 ? (
+            <p className="text-gray-500 text-center mt-10">
+              No team members assigned yet.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {team.map((member) => {
+                const imageUrl =
+                  typeof member.Photo === "string" && member.Photo !== ""
+                    ? `${import.meta.env.VITE_BASE_API_URL.replace(
+                        "/api",
+                        ""
+                      )}/uploads/${member.Photo}`
+                    : "/assets/images/team-1.jpg";
 
-              return (
-                <div
-                  key={member.EmpId}
-                  onClick={()=>handleView(member.EmpId,true)}
-                  className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden flex flex-col transition hover:shadow-lg"
-                >
-                  {/* Card Header with Image & Name */}
-                  <div className="flex items-center px-4 py-3 border-b dark:border-gray-700">
-                    <img
-                      src={imageUrl}
-                      alt={member.FirstName}
-                      className="w-12 h-12 rounded-full mr-4 object-cover border-2 border-gray-300 dark:border-gray-600"
-                      loading="lazy"
-                    />
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-white capitalize">
-                        {member.FirstName} {member.LastName}
-                      </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-300 capitalize">
-                        {member.department} - {member.Designation}
+                // Define status colors & dot
+                const statusColor =
+                  member.Status === "Active"
+                    ? "bg-green-500"
+                    : member.Status === "Idle"
+                    ? "bg-yellow-500"
+                    : "bg-gray-400";
+
+                return (
+                  <div
+                    key={member.EmpId}
+                    onClick={() => handleView(member.EmpId, true)}
+                    className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden flex flex-col transition transform hover:scale-105 hover:shadow-lg cursor-pointer"
+                  >
+                    {/* Header with Image & Status */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b dark:border-gray-700">
+                      <div className="flex items-center">
+                        <img
+                          src={imageUrl}
+                          alt={member.FirstName}
+                          className="w-12 h-12 rounded-full mr-4 object-cover border-2 border-gray-300 dark:border-gray-600"
+                        />
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-800 dark:text-white capitalize">
+                            {member.FirstName} {member.LastName}
+                          </h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-300 capitalize">
+                            {member.department || "Department"} -{" "}
+                            {member.Designation || "Designation"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Status Badge with Dot */}
+                      <div className="flex items-center gap-1">
+                        <span
+                          className={`w-2.5 h-2.5 rounded-full ${statusColor}`}
+                        ></span>
+                        <span
+                          className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                            member.Status === "Active"
+                              ? "bg-green-100 text-green-700"
+                              : member.Status === "Idle"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                          }`}
+                        >
+                          {member.Status || "Unknown"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Card Body */}
+                    <div className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                      <p>
+                        <strong>Email:</strong>{" "}
+                        {member.Email || "Not Available"}
+                      </p>
+                      <p>
+                        <strong>Joining:</strong>{" "}
+                        {member.JoiningDate || "Not Available"}
+                      </p>
+                      <p>
+                        <strong>Mobile:</strong>{" "}
+                        {member.Mobile || "Not Available"}
+                      </p>
+                      <p>
+                        <strong>Role:</strong>{" "}
+                        {member.RoleInProject || "Not Assigned"}
                       </p>
                     </div>
-                  </div>
 
-                  {/* Card Body with Details */}
-                  <div className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                    <p>
-                      <strong>Email:</strong> {member.Email}
-                    </p>
-                    <p>
-                      <strong>Joining:</strong>{" "}
-                      {member.JoiningDate || "Not Available"}
-                    </p>
-                    <p>
-                      <strong>Mobile:</strong> {member.Mobile || "Not Available"}
-                    </p>
-                  </div>
-
-                  {/* Card Footer with Actions */}
-                  <div className="px-4 py-3 border-t bg-gray-50 dark:bg-gray-700 dark:border-gray-600 flex justify-between"
-                      onClick={(e) => e.stopPropagation()} >
-                    <button
-                      onClick={() => handleView(member.EmpId,false)}
-                      className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 transition"
+                    {/* Footer Buttons */}
+                    <div
+                      className="px-4 py-3 border-t bg-gray-50 dark:bg-gray-700 dark:border-gray-600 flex justify-between"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <FaEye /> View
-                    </button>
-                    <button
-                      onClick={() => handleEditClick(member)}
-                      className="text-sm text-purple-600 hover:text-purple-800 flex items-center gap-1 transition"
-                    >
-                      <FaEdit /> Edit
-                    </button>
+                      <button
+                        onClick={() => handleView(member.EmpId, false)}
+                        className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 transition"
+                      >
+                        <FaEye /> View
+                      </button>
+                      <button
+                        onClick={() => handleEditClick(member)}
+                        className="text-sm text-purple-600 hover:text-purple-800 flex items-center gap-1 transition"
+                      >
+                        <FaEdit /> Edit
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </>
       )}
     </div>
