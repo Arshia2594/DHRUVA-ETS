@@ -34,7 +34,7 @@ const ProjectForm = ({ setIsCreateUpdate, objectToEdit, isCreateUpdate }) => {
   const departments = useAxios("/department/get-departments", { params: { _limit: 5 } }, true);
   const managers = useAxios("/employee/get-manager-list", { params: { _limit: 5 } }, true);
 
- 
+
   const FORM_STATE = objectToEdit
     ? {
       ProjectId: objectToEdit?.ProjectId,
@@ -47,6 +47,7 @@ const ProjectForm = ({ setIsCreateUpdate, objectToEdit, isCreateUpdate }) => {
       ProjectEndDate: objectToEdit?.ProjectEndDate,
       Members: objectToEdit?.Members?.map((member) => member.EmpId) || [],
       MembersAvatar: objectToEdit?.MembersAvatar,
+     
     }
     : INITIAL_FORM_STATE;
 
@@ -96,7 +97,6 @@ const ProjectForm = ({ setIsCreateUpdate, objectToEdit, isCreateUpdate }) => {
                   })) || []
                 }
               />
-
               <DepartmentMembersSelect />
 
               <FormikDatePicker name="ProjectStartDate" label="Start Date" />
