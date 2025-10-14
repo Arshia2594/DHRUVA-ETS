@@ -74,79 +74,98 @@ export default function TimesheetSummary({ summary }) {
       <div className="h-[280px] bg-gray-50 dark:bg-gray-700 rounded-lg p-3 flex items-center justify-center">
         {view === "bar" ? (
           barData.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={barData}>
-                <XAxis
-                  dataKey="projectName"
-                  interval={0}
-                  angle={-10}
-                  textAnchor="middle"
-                  height={50}
-                  tick={{ fontSize: 12 }}
-                />
-                <YAxis />
-                <Tooltip
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      const project = payload[0].payload;
-                      return (
-                        <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-600 rounded-lg p-3 text-sm">
-                          <p className="font-semibold text-green-600 mb-1">
-                            {project.projectName}
-                          </p>
-                          <p className="text-gray-700 dark:text-gray-200 mb-2">
-                            Total: {project.totalHours.toFixed(1)} hrs
-                          </p>
-                          {project.employees?.length > 0 && (
-                            <>
-                              <p className="font-semibold text-gray-600 dark:text-gray-300 underline mb-1">
-                                Employees:
-                              </p>
-                              <ul className="text-gray-700 dark:text-gray-200">
-                                {project.employees.map((e, i) => (
-                                  <li key={i}>
-                                    {e.empName} - {e.hours.toFixed(1)} hrs
-                                  </li>
-                                ))}
-                              </ul>
-                            </>
-                          )}
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="totalHours" fill="#22c55e" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          //  <div className="overflow-x-auto w-full">
+  <div className="min-w-[600px] h-[300px]">
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart
+        data={barData.map((item) => ({
+          ...item,
+          shortName:
+            item.projectName.length > 12
+              ? item.projectName.slice(0, 12) + "..."
+              : item.projectName,
+        }))}
+        margin={{ top: 20, right: 30, left: 40, bottom: 60 }}
+      >
+        <XAxis
+          dataKey="shortName"
+          interval={0}
+          angle={-45}
+          textAnchor="end"
+          height={70}
+          tick={{ fontSize: 11, fill: "#374151" }}
+        />
+        <YAxis
+          tick={{ fontSize: 12, fill: "#374151" }}
+          axisLine={{ stroke: "#ccc" }}
+          tickLine={{ stroke: "#ccc" }}
+        />
+        <Tooltip
+          formatter={(value) => [`${value.toFixed(1)} hrs`, "Total"]}
+          labelFormatter={(label, payload) =>
+            payload?.[0]?.payload?.projectName || label
+          }
+          contentStyle={{
+            backgroundColor: "#fff",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            fontSize: "12px",
+          }}
+        />
+        <Legend
+          verticalAlign="top"
+          height={36}
+          wrapperStyle={{ fontSize: "12px", paddingBottom: "10px" }}
+        />
+        <Bar
+          dataKey="totalHours"
+          fill="#22c55e"
+          radius={[6, 6, 0, 0]}
+          barSize={35}
+        />
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+// </div>
+
           ) : (
             <div className="text-gray-400 text-sm">No project data available</div>
           )
         ) : pieData.length > 0 ? (
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                outerRadius={100}
-                label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
-              >
-                {pieData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          <ResponsiveContainer width="100%" height={250}>
+  <PieChart>
+    <Pie
+      data={pieData}
+      dataKey="value"
+      nameKey="name"
+      outerRadius={90}
+      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+      labelLine={false} // ✅ removes those connector lines
+    >
+      {pieData.map((entry, index) => (
+        <Cell
+          key={`cell-${index}`}
+          fill={COLORS[index % COLORS.length]}
+        />
+      ))}
+    </Pie>
+    <Tooltip
+      formatter={(value, name) => [`${value} hrs`, name]}
+      contentStyle={{
+        backgroundColor: "#fff",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        fontSize: "12px",
+      }}
+    />
+    <Legend
+      verticalAlign="bottom"
+      iconType="circle"
+      wrapperStyle={{ fontSize: "12px" }}
+    />
+  </PieChart>
+</ResponsiveContainer>
+
         ) : (
           <div className="text-gray-400 text-lg">No status data available</div>
         )}
