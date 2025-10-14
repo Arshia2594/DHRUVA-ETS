@@ -1,15 +1,109 @@
 
 
+// import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import useAuth from "../../hooks/useAuth";
+
+// import {
+//   GET_ALL_PROJECTS_DETAILS,
+//   GET_PROJECTS_BY_MANAGER_ID,
+//   GET_PROJECTS_BY_USER_ID,
+// } from "../../utils/Strings";
+
+// import HeaderTitle from "../../components/common/HeaderTitle";
+// import ProjectCard from "../../components/common/ProjectCard";
+// import ProjectForm from "../../components/common/ProjectForm";
+// import useAxios from "../../hooks/useAxios";
+
+// const Projects = () => {
+//   const { auth } = useAuth();
+//   const navigate = useNavigate();
+
+//   const [isCreateUpdate, setIsCreateUpdate] = useState(false);
+//   const [objectToEdit, setObjectToEdit] = useState(null);
+
+//   // Set API based on role
+//   const API =
+//     auth.role === "Manager"
+//       ? GET_PROJECTS_BY_MANAGER_ID
+//       : auth.role === "User"
+//       ? GET_PROJECTS_BY_USER_ID
+//       : GET_ALL_PROJECTS_DETAILS;
+
+//   // const projects = useAxios(
+//   //   API,
+//   //   { params: { _limit: 5 } },
+//   //   true,
+//   //   [isCreateUpdate]
+//   // );
+
+//   const projects = useAxios(
+//   API,
+//   {
+//     params:
+//       auth.role === "Admin"
+//         ? {} // Don't send department if admin
+//         : { department: auth?.department }, // Only for manager/user
+//   },
+//   true,
+//   [isCreateUpdate]
+// );
+
+
+//   const handleAddClick = (e) => {
+//     e.preventDefault();
+//     setObjectToEdit(null);
+//     setIsCreateUpdate(true);
+//   };
+
+//   const handleEditClick = (project) => {
+//     setObjectToEdit(project);
+//     setIsCreateUpdate(true);
+//   };
+
+//   const handleView = (projectId) => {
+//     const role = auth?.role?.toLowerCase(); // admin, user, manager
+//     console.log("Navigating to:", `/${role}/project-details/${projectId}`);
+//     navigate(`/${role}/project-details/${projectId}`);
+//   };
+
+//   return (
+//     <div className="p-6">
+//       <HeaderTitle
+//         title="Project Details"
+//         nameButton2="ADD"
+//         handleButton2={handleAddClick}
+//       />
+
+//       {isCreateUpdate ? (
+//         <div className="mt-6">
+//           <ProjectForm
+//             isCreateUpdate={isCreateUpdate}
+//             setIsCreateUpdate={setIsCreateUpdate}
+//             objectToEdit={objectToEdit}
+//           />
+//         </div>
+//       ) : (
+//         <div className="mt-6">
+//           <ProjectCard
+//             projects={Array.isArray(projects?.data) ? projects.data : []}
+//             onEdit={handleEditClick}
+//             onView={handleView}
+//           />
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
-
 import {
   GET_ALL_PROJECTS_DETAILS,
   GET_PROJECTS_BY_MANAGER_ID,
   GET_PROJECTS_BY_USER_ID,
 } from "../../utils/Strings";
-
 import HeaderTitle from "../../components/common/HeaderTitle";
 import ProjectCard from "../../components/common/ProjectCard";
 import ProjectForm from "../../components/common/ProjectForm";
@@ -19,10 +113,11 @@ const Projects = () => {
   const { auth } = useAuth();
   const navigate = useNavigate();
 
+   if (!auth) return null; 
   const [isCreateUpdate, setIsCreateUpdate] = useState(false);
   const [objectToEdit, setObjectToEdit] = useState(null);
 
-  // Set API based on role
+  //  API selection based on role
   const API =
     auth.role === "Manager"
       ? GET_PROJECTS_BY_MANAGER_ID
@@ -30,51 +125,58 @@ const Projects = () => {
       ? GET_PROJECTS_BY_USER_ID
       : GET_ALL_PROJECTS_DETAILS;
 
-  // const projects = useAxios(
-  //   API,
-  //   { params: { _limit: 5 } },
-  //   true,
-  //   [isCreateUpdate]
-  // );
-
+  //  Fetch projects
   const projects = useAxios(
-  API,
-  {
-    params:
-      auth.role === "Admin"
-        ? {} // Don't send department if admin
-        : { department: auth?.department }, // Only for manager/user
-  },
-  true,
-  [isCreateUpdate]
-);
+    API,
+    {
+      params:
+        auth.role === "Admin"
+          ? {}
+          : { department: auth?.department },
+    },
+    true,
+    [isCreateUpdate]
+  );
 
-
-  const handleAddClick = (e) => {
-    e.preventDefault();
+  //  Add button handler
+  const handleAddClick = () => {
+    console.log("Add button clicked"); // test log
     setObjectToEdit(null);
     setIsCreateUpdate(true);
   };
 
+  //  Edit button handler
   const handleEditClick = (project) => {
     setObjectToEdit(project);
     setIsCreateUpdate(true);
   };
 
+  //  View details handler
   const handleView = (projectId) => {
-    const role = auth?.role?.toLowerCase(); // admin, user, manager
-    console.log("Navigating to:", `/${role}/project-details/${projectId}`);
+    const role = auth?.role?.toLowerCase();
     navigate(`/${role}/project-details/${projectId}`);
   };
 
   return (
     <div className="p-6">
+      {/*  Header with Add Project button */}
       <HeaderTitle
-        title="Project Details"
-        nameButton2="ADD"
-        handleButton2={handleAddClick}
-      />
+  title="Project Details"
+  buttons={[
+    {
+      label: "Add Project",
+      onClick: () => {
+        console.log("Add Project clicked ");
+        setObjectToEdit(null);
+        setIsCreateUpdate(true);
+      },
+      variant: "success",
+    },
+  ]}
+/>
 
+
+      {/*  Conditional rendering */}
       {isCreateUpdate ? (
         <div className="mt-6">
           <ProjectForm
