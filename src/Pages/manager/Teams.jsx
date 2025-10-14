@@ -14,20 +14,30 @@ const Team = () => {
   const [endpoint, setEndpoint] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [statusEndpoint, setStatusEndpoint] = useState(null)
 
   useEffect(() => {
     if (auth?.empId) {
       setEndpoint(`/employee/manager/team/${auth.empId}`);
+      setStatusEndpoint(`/employee/manager/team/status`);
     }
   }, [auth?.empId]);
 
   const { data: apiResponse, loading, error, refetch } = useAxios(endpoint, {}, !!endpoint, [endpoint]);
 
-  const team = Array.isArray(apiResponse?.data)
-    ? apiResponse.data
-    : Array.isArray(apiResponse)
-    ? apiResponse
-    : [];
+  // const team = Array.isArray(apiResponse?.data)
+  //   ? apiResponse.data
+  //   : Array.isArray(apiResponse)
+  //     ? apiResponse
+  //     : [];
+  const [teamData, setTeamData] = useState([]);
+
+useEffect(() => {
+  if (Array.isArray(apiResponse?.data)) {
+    setTeamData(apiResponse.data);
+  }
+}, [apiResponse]);
+
 
   const handleView = (empId, showTimeSheet = false) => {
     const role = auth?.role?.toLowerCase();
@@ -41,8 +51,46 @@ const Team = () => {
     setIsCreateUpdate(true);
   };
 
+  const handleStatusToggle = async (empId, currentStatus) => {
+  const newStatus = currentStatus === "Active" ? "Idle" : "Active";
+  const url = `${import.meta.env.VITE_BASE_API_URL}${statusEndpoint}/${empId}`;
+  console.log("Sending PUT to:", url);
+  console.log("New status:", newStatus);
+
+  try {
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status: newStatus }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Failed to update status", data);
+      throw new Error(data.message || "Failed to update status");
+    }
+
+    console.log("Status updated successfully", data);
+
+    // Update UI directly
+    setTeamData(prev =>
+      prev.map(member =>
+        member.EmpId === empId
+          ? { ...member, Status: newStatus }
+          : member
+      )
+    );
+  } catch (error) {
+    console.error("Error updating status:", error.message);
+  }
+};
+
+
   // Filter logic (Search + Status)
-  const filteredTeam = team.filter((member) => {
+  const filteredTeam = teamData.filter((member) => {
     const matchesSearch =
       member.FirstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.LastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -110,9 +158,9 @@ const Team = () => {
                 const imageUrl =
                   typeof member.Photo === "string" && member.Photo !== ""
                     ? `${import.meta.env.VITE_BASE_API_URL.replace(
-                        "/api",
-                        ""
-                      )}/uploads/${member.Photo}`
+                      "/api",
+                      ""
+                    )}/uploads/${member.Photo}`
                     : "/assets/images/team-1.jpg";
 
                 //  Dot color logic
@@ -120,8 +168,8 @@ const Team = () => {
                   member.Status === "Active"
                     ? "bg-green-500"
                     : member.Status === "Idle"
-                    ? "bg-red-500"
-                    : "bg-gray-400";
+                      ? "bg-red-500"
+                      : "bg-gray-400";
 
                 return (
                   <div
@@ -130,36 +178,42 @@ const Team = () => {
                     className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden flex flex-col transition-transform transform hover:scale-105 hover:shadow-lg cursor-pointer"
                   >
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b dark:border-gray-700">
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <img
-                            src={imageUrl}
-                            alt={member.FirstName}
-                            className="w-12 h-12 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
-                          />
-                          <span
-                            className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 ${statusColor}`}
-                          ></span>
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-800 dark:text-white capitalize">
-                            {member.FirstName} {member.LastName}
-                          </h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-300 capitalize">
-                            {member.department} - {member.Designation}
-                          </p>
-                        </div>
+                    <div className="flex  items-center gap-3 min-h-[60px]">
+                      <div className="relative">
+                        <img
+                          src={imageUrl}
+                          alt={member.FirstName}
+                          className="w-12 h-12 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
+                        />
+                        <span
+                          className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 ${statusColor}`}
+                        ></span>
                       </div>
+                      <div className="min-h-[40px] flex flex-col justify-center">
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white capitalize">
+                          {member.FirstName} {member.LastName}
+                        </h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-300 capitalize">
+                          {member.department} - {member.Designation}
+                        </p>
+                      </div>
+
+
                       <span
-                        className={`px-3 py-1 text-xs font-medium rounded-full ${
-                          member.Status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
-                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log("Status clicked", member.EmpId, member.Status); // 👈 Add this
+                          handleStatusToggle(member.EmpId, member.Status);
+                        }}
+
+                        className={`px-3 py-1 text-xs font-medium rounded-full cursor-pointer ${member.Status === "Active"
+                          ? "bg-green-100 text-green-700 hover:bg-green-200"
+                          : "bg-gray-200 text-gray-600 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300"
+                          }`}
                       >
                         {member.Status}
                       </span>
+
                     </div>
 
                     {/* Body */}
