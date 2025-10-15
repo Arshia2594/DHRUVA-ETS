@@ -14,30 +14,21 @@ const Team = () => {
   const [endpoint, setEndpoint] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [statusEndpoint, setStatusEndpoint] = useState(null)
 
   useEffect(() => {
     if (auth?.empId) {
       setEndpoint(`/employee/manager/team/${auth.empId}`);
-      setStatusEndpoint(`/employee/manager/team/status`);
     }
   }, [auth?.empId]);
 
   const { data: apiResponse, loading, error, refetch } = useAxios(endpoint, {}, !!endpoint, [endpoint]);
-
-  // const team = Array.isArray(apiResponse?.data)
-  //   ? apiResponse.data
-  //   : Array.isArray(apiResponse)
-  //     ? apiResponse
-  //     : [];
   const [teamData, setTeamData] = useState([]);
 
-useEffect(() => {
-  if (Array.isArray(apiResponse?.data)) {
-    setTeamData(apiResponse.data);
-  }
-}, [apiResponse]);
-
+  useEffect(() => {
+    if (Array.isArray(apiResponse?.data)) {
+      setTeamData(apiResponse.data);
+    }
+  }, [apiResponse]);
 
   const handleView = (empId, showTimeSheet = false) => {
     const role = auth?.role?.toLowerCase();
@@ -51,44 +42,6 @@ useEffect(() => {
     setIsCreateUpdate(true);
   };
 
-  const handleStatusToggle = async (empId, currentStatus) => {
-  const newStatus = currentStatus === "Active" ? "Idle" : "Active";
-  const url = `${import.meta.env.VITE_BASE_API_URL}${statusEndpoint}/${empId}`;
-  console.log("Sending PUT to:", url);
-  console.log("New status:", newStatus);
-
-  try {
-    const response = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status: newStatus }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Failed to update status", data);
-      throw new Error(data.message || "Failed to update status");
-    }
-
-    console.log("Status updated successfully", data);
-
-    // Update UI directly
-    setTeamData(prev =>
-      prev.map(member =>
-        member.EmpId === empId
-          ? { ...member, Status: newStatus }
-          : member
-      )
-    );
-  } catch (error) {
-    console.error("Error updating status:", error.message);
-  }
-};
-
-
   // Filter logic (Search + Status)
   const filteredTeam = teamData.filter((member) => {
     const matchesSearch =
@@ -97,9 +50,7 @@ useEffect(() => {
       member.Email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.department?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesStatus =
-      statusFilter === "All" || member.Status === statusFilter;
-
+    const matchesStatus = statusFilter === "All" || member.Status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -109,20 +60,26 @@ useEffect(() => {
   return (
     <div className="p-6">
       {isCreateUpdate ? (
-        <TeamForm
-          objectToEdit={objectToEdit}
-          setIsCreateUpdate={setIsCreateUpdate}
-          refetch={refetch}
-        />
+       <TeamForm
+  objectToEdit={objectToEdit}
+  setIsCreateUpdate={setIsCreateUpdate}
+  refetch={refetch}
+  onUpdateLocal={(updatedEmp) => {
+    setTeamData((prev) =>
+      prev.map((emp) =>
+        emp.EmpId === updatedEmp.EmpId ? { ...emp, ...updatedEmp } : emp
+      )
+    );
+  }}
+/>
+
       ) : (
         <>
           {/* Header Section */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              My Team
-            </h2>
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">My Team</h2>
 
-            {/* Search + Filter Controls */}
+            {/* Search + Filter */}
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <div className="relative">
                 <FaSearch className="absolute left-3 top-3 text-gray-400" />
@@ -157,83 +114,58 @@ useEffect(() => {
               {filteredTeam.map((member) => {
                 const imageUrl =
                   typeof member.Photo === "string" && member.Photo !== ""
-                    ? `${import.meta.env.VITE_BASE_API_URL.replace(
-                      "/api",
-                      ""
-                    )}/uploads/${member.Photo}`
+                    ? `${import.meta.env.VITE_BASE_API_URL.replace("/api", "")}/uploads/${member.Photo}`
                     : "/assets/images/team-1.jpg";
 
-                //  Dot color logic
                 const statusColor =
                   member.Status === "Active"
-                    ? "bg-green-500"
-                    : member.Status === "Idle"
-                      ? "bg-red-500"
-                      : "bg-gray-400";
+                    ? "bg-green-100 text-green-700"
+                    : "bg-yellow-100 text-yellow-700";
 
                 return (
                   <div
                     key={member.EmpId}
                     onClick={() => handleView(member.EmpId, true)}
-                    className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden flex flex-col transition-transform transform hover:scale-105 hover:shadow-lg cursor-pointer"
+                    className="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden flex flex-col h-full transition-transform duration-200 hover:scale-[1.03] hover:shadow-xl cursor-pointer"
                   >
-                    {/* Header */}
-                    <div className="flex  items-center gap-3 min-h-[60px]">
-                      <div className="relative">
-                        <img
-                          src={imageUrl}
-                          alt={member.FirstName}
-                          className="w-12 h-12 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
-                        />
-                        <span
-                          className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 ${statusColor}`}
-                        ></span>
-                      </div>
-                      <div className="min-h-[40px] flex flex-col justify-center">
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white capitalize">
-                          {member.FirstName} {member.LastName}
-                        </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-300 capitalize">
-                          {member.department} - {member.Designation}
-                        </p>
+                    {/* Card Header */}
+                    <div className="flex items-center justify-between px-4 pt-4">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <img
+                            src={imageUrl}
+                            alt={member.FirstName}
+                            className="w-14 h-14 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700"
+                          />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-gray-800 dark:text-white capitalize">
+                            {member.FirstName} {member.LastName}
+                          </h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-300 capitalize">
+                            {member.department} - {member.Designation}
+                          </p>
+                        </div>
                       </div>
 
-
+                      {/* Status Badge */}
                       <span
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log("Status clicked", member.EmpId, member.Status); // 👈 Add this
-                          handleStatusToggle(member.EmpId, member.Status);
-                        }}
-
-                        className={`px-3 py-1 text-xs font-medium rounded-full cursor-pointer ${member.Status === "Active"
-                          ? "bg-green-100 text-green-700 hover:bg-green-200"
-                          : "bg-gray-200 text-gray-600 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300"
-                          }`}
+                        className={`px-3 py-1 text-xs font-medium rounded-full ${statusColor}`}
                       >
-                        {member.Status}
+                        {member.Status || "Unknown"}
                       </span>
-
                     </div>
 
-                    {/* Body */}
-                    <div className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                      <p>
-                        <strong>Email:</strong> {member.Email}
-                      </p>
-                      <p>
-                        <strong>Joining:</strong>{" "}
-                        {member.JoiningDate || "Not Available"}
-                      </p>
-                      <p>
-                        <strong>Mobile:</strong>{" "}
-                        {member.Mobile || "Not Available"}
-                      </p>
+                    {/* Card Body */}
+                    <div className="px-4 py-3 mt-1 text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                      <p><strong>Email:</strong> {member.Email}</p>
+                      <p><strong>Joining:</strong> {member.JoiningDate || "Not Available"}</p>
+                      <p><strong>Mobile:</strong> {member.Mobile || "Not Available"}</p>
                     </div>
 
                     {/* Footer */}
                     <div
-                      className="px-4 py-3 border-t bg-gray-50 dark:bg-gray-700 dark:border-gray-600 flex justify-between"
+                      className="mt-auto px-4 py-3 border-t bg-gray-50 dark:bg-gray-700 dark:border-gray-600 flex justify-between"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
@@ -261,3 +193,4 @@ useEffect(() => {
 };
 
 export default Team;
+
