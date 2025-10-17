@@ -34,6 +34,7 @@ import Projects from "./components/common/Projects";
 import TeamAdmin from "./Pages/admin/TeamAdmin";
 import Teams from "./Pages/manager/Teams";
 import TeamDetails from "./components/common/TeamDetail";
+import Leave from "./Pages/employee/Leave"
 
 
 // Protected Route Component
@@ -79,6 +80,7 @@ const App = () => {
           <Route path="projects" element={<Projects />} />
           <Route path="teams/:teamId" element={<TeamAdmin />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
+            <Route path="leave" element={<Leave />} />
         </Route>
 
         {/* Manager Routes */}
@@ -97,6 +99,7 @@ const App = () => {
           <Route path="projects" element={<Projects />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
           <Route path="team-details/:empId" element={<TeamDetails />} />
+          <Route path="leave" element = {<Leave/>} />   
 
         </Route>
 
@@ -114,6 +117,7 @@ const App = () => {
           <Route path="time-tracker" element={<TimeTracking />} />
           <Route path="projects" element={<Projects />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
+          <Route path="leave" element = {<Leave/>} />                          
         </Route>
 
         

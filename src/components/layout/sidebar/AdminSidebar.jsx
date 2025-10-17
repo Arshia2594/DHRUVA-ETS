@@ -18,6 +18,8 @@ const AdminSidebar = ({ open, setOpen, darkMode }) => {
     { name: "Employees", icon: <FiUsers size={18} />, path: "/admin/employees" },
     { name: "Customers", icon: <FiUser size={18} />, path: "/admin/customers" },
     { name: "Projects", icon: <FiBriefcase size={18} />, path: "/admin/projects" },
+    { name: "Leave", icon: <FiLayers size={18} />, path: "/admin/leave" },
+
   ];
 
   const teamItems = [
