@@ -55,6 +55,7 @@ import {
   FiUsers,
   FiClock,
   FiBriefcase,
+  FiFileText,
 } from "react-icons/fi";
 import SidebarWrapper from "../../common/SidebarWrapper";
 
@@ -85,6 +86,11 @@ const ManagerSidebar = ({ open, setOpen, darkMode }) => {
       icon: <FiBriefcase size={18} />,
       path: "/manager/projects",
     },
+    {
+        name: "Leave / Attendance",
+        icon: <FiFileText size={18} />, 
+         path: "/manager/leave",
+        }
   ];
 
   return (
