@@ -31,10 +31,10 @@ const EmployeeSidebar = ({ open,setOpen, darkMode }) => {
       path: "/user/projects",
     },
     {
-      name: "Project Details",
-      icon: <FiFileText size={18} />,
-      path: "/user/project-details",
-    },
+    name: "Leave / Attendance",
+    icon: <FiFileText size={18} />, 
+    path: "/user/Leave",
+    }
   ];
 
   return (
