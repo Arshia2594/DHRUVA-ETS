@@ -13,8 +13,20 @@ export default {
 
 
   theme: {
-    extend: {},
+  extend: {
+    colors: {
+      schaeffler: {
+        green: "#006633",
+        greenLight: "#E6F4EA",
+        greenDark: "#004d26",
+        greenGradientStart: "#008542",
+        greenGradientEnd: "#006633",
+      },
+    },
   },
+},
+
+
   
   plugins: [],
 }
