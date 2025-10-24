@@ -31,14 +31,16 @@ const AdminSidebar = ({ open, setOpen, darkMode }) => {
   ];
 
   return (
-    <SidebarWrapper
-      open={open}
-      setOpen={setOpen} 
-      darkMode={darkMode}
-      menuItems={menuItems}
-      teamItems={teamItems}
-      baseTeamPath="/admin/teams"
-    />
+   <SidebarWrapper
+  open={open}
+  setOpen={setOpen} 
+  darkMode={darkMode}
+  menuItems={menuItems}
+  teamItems={teamItems}
+  baseTeamPath="/admin/teams"
+  title="Admin Panel"
+/>
+
   );
 };
 

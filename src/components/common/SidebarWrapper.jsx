@@ -1,117 +1,120 @@
+import { NavLink } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import schaefflerLogo from "../../assets/schaeffler.png";
 
-
-import React, { useState } from "react";
-import { FiChevronDown, FiChevronUp, FiLayers, FiChevronRight, FiChevronLeft } from "react-icons/fi";
-import { useNavigate, useLocation } from "react-router-dom";
-
-const SidebarWrapper = ({
-  open,
-  setOpen,
-  darkMode,
-  menuItems = [],
-  teamItems = [],
-  baseTeamPath = "",
+const SidebarWrapper = ({ 
+  open, 
+  setOpen, 
+  darkMode, 
+  menuItems, 
+  teamItems = [], 
+  baseTeamPath = "", 
+  title = ""  
 }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(true);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const handleNavigation = (path) => navigate(path);
-  const handleDropdownToggle = () => setDropdownOpen(!dropdownOpen);
-
-  // const hoverClass = darkMode
-  //   ? "hover:bg-green-900/60 hover:shadow-md hover:shadow-black/40"
-  //   : "hover:bg-green-100 hover:shadow-lg hover:shadow-green-400/40";
-
- 
-  const hoverClass = darkMode
-  ? "hover:bg-gray-800 hover:shadow-sm hover:shadow-black/20"
-  : "hover:bg-[#35644B] hover:shadow-sm hover:shadow-green-300/20";
-
-
   return (
-  <aside
-  className={`fixed top-0 left-0 h-screen z-40 transition-all duration-300 flex flex-col shadow-lg
-    ${open ? "w-60" : "w-16"}
-    ${
-      darkMode
-        ? "bg-gray-900 text-white"   
-        : "bg-gradient-to-b from-[#2B7A4B] via-[#1E5F3A] to-[#144A2F] text-white"
-    }`}
->
+    <aside
+      className={`fixed top-0 left-0 h-screen transition-all duration-300 z-40
+        ${open ? "w-60" : "w-20"} 
+        backdrop-blur-xl bg-white/70 dark:bg-gray-900/50 shadow-xl border-r border-white/20 flex flex-col`}
+    >
+      {/* Top Section: Logo + Toggle */}
+      <div className="flex items-center justify-between h-16 px-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center gap-2">
+          
+          <span
+            className={`font-bold text-lg text-green-600 transition-opacity duration-300
+              ${open ? "opacity-100" : "opacity-0 hidden"}`}
+          >
+            {title}  {/*  Dynamic title */}
+          </span>
+        </div>
 
-
-      {/* Space reserved for logo - no tag */}
-      <div className="h-16 flex items-center justify-center text-sm font-bold tracking-wide">
-        {open ? " " : ""}
-      </div>
-
-      {/* Toggle Button (middle center) */}
-      <div className="absolute top-1/2 -right-3 transform -translate-y-1/2 z-50">
         <button
           onClick={() => setOpen(!open)}
-          className={`rounded-full bg-white shadow-md border border-gray-300 w-6 h-6 flex items-center justify-center
-            ${darkMode ? "text-black" : "text-green-800"}`}
+          className="p-1 rounded-full hover:bg-green-100 dark:hover:bg-gray-800 transition-colors"
         >
-          {open ? <FiChevronLeft size={16} /> : <FiChevronRight size={16} />}
+          {open ? <FiChevronLeft size={18} /> : <FiChevronRight size={18} />}
         </button>
       </div>
 
-      {/* Menu Items */}
-      <nav className="flex-1 px-2 py-4 text-sm font-medium overflow-y-auto scrollbar-hide">
-        {menuItems.map((item) => (
-          <div
-            key={item.name}
-            onClick={() => handleNavigation(item.path)}
-            className={`group flex items-center gap-3 px-2 py-2 rounded-lg cursor-pointer transition-all duration-300 ${hoverClass}
-              ${location.pathname === item.path ? "bg-white/30 font-semibold border-l-4 border-white/70 dark:border-gray-300" : ""}`}
+      {/* Menu */}
+      <nav className="mt-4 space-y-2 px-2 flex-1">
+        {menuItems.map((item, idx) => (
+          <NavLink
+            key={idx}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm
+              ${isActive
+                ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
+                : "text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800"}`
+            }
+            title={!open ? item.name : ""}
           >
-            <span className="transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
-              {item.icon}
-            </span>
-            {open && <span className="whitespace-nowrap">{item.name}</span>}
-          </div>
-        ))}
-
-        {/* Teams Dropdown */}
-        {teamItems.length > 0 && (
-          <>
-            <div
-              className={`group flex items-center justify-between px-2 py-2 mt-2 rounded-lg cursor-pointer transition-all duration-300 ${hoverClass}`}
-              onClick={handleDropdownToggle}
-            >
-              <div className="flex items-center gap-3">
-                <FiLayers size={18} />
-                {open && "Teams"}
-              </div>
-              {open && (dropdownOpen ? <FiChevronUp /> : <FiChevronDown />)}
-            </div>
-
-            <div
-              className={`ml-6 mt-1 flex flex-col gap-1 overflow-hidden transition-all duration-500
-                ${dropdownOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
-            >
-              {teamItems.map((team) => (
-                <div
-                  key={team.name}
-                  onClick={() => handleNavigation(`${baseTeamPath}/${team.path}`)}
-                  className={`group flex items-center gap-3 px-2 py-1.5 rounded-lg cursor-pointer transition-all duration-300 ${hoverClass}
-                    ${
-                      location.pathname === `${baseTeamPath}/${team.path}`
-                        ? "bg-white/30 font-semibold border-l-4 border-white/70 dark:border-gray-300"
-                        : ""
-                    }`}
+            <span className="shrink-0">{item.icon}</span>
+            <AnimatePresence>
+              {open && (
+                <motion.span
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  className="whitespace-nowrap"
                 >
-                  <span className="transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
-                    {team.icon}
-                  </span>
-                  {open && <span>{team.name}</span>}
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+                  {item.name}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </NavLink>
+        ))}
       </nav>
+
+      {/* Teams Section same as before... */}
+      {teamItems.length > 0 && (
+        <div className="mt-2 mb-4">
+          <AnimatePresence>
+            {open && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="px-4 text-xs uppercase text-gray-400 tracking-wider mb-2"
+              >
+                Teams
+              </motion.p>
+            )}
+          </AnimatePresence>
+          <nav className="space-y-1 px-2">
+            {teamItems.map((item, idx) => (
+              <NavLink
+                key={idx}
+                to={`${baseTeamPath}/${item.path}`}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-sm
+                  ${isActive
+                    ? "bg-green-500 text-white shadow"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800"}`
+                }
+                title={!open ? item.name : ""}
+              >
+                <span className="shrink-0">{item.icon}</span>
+                <AnimatePresence>
+                  {open && (
+                    <motion.span
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      className="whitespace-nowrap"
+                    >
+                      {item.name}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+      )}
     </aside>
   );
 };

@@ -38,13 +38,15 @@ const EmployeeSidebar = ({ open,setOpen, darkMode }) => {
   ];
 
   return (
-    <SidebarWrapper
-      open={open}
-      setOpen={setOpen} 
-      darkMode={darkMode}
-      menuItems={menuItems}
-      teamItems={[]} // No dropdown for employee
-    />
+   <SidebarWrapper
+  open={open}
+  setOpen={setOpen} 
+  darkMode={darkMode}
+  menuItems={menuItems}
+  teamItems={[]}
+  title="Employee Panel"
+/>
+
   );
 };
 
