@@ -11,9 +11,11 @@ export default {
   'hover:bg-blue-700',
 ],
 
+
   theme: {
     extend: {},
   },
+  
   plugins: [],
 }
 
