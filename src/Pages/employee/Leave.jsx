@@ -164,6 +164,26 @@ const Leave = () => {
     ...(isManager || isAdmin ? [{ field: "actions", headerName: "Action" }] : []),
   ];
 
+  const [stats, setStats] = useState({ totalLeaves: 0, used: 0, remaining: 0, compOff: 0 });
+
+useEffect(() => {
+  const fetchStats = async () => {
+    try {
+      const url = isManager
+        ? "/employee/leave/manager/stats"
+        : "/employee/leave/stats";
+      const res = await axiosInstance.get(url);
+      setStats(res.data);
+    } catch (err) {
+      console.error("Error fetching leave stats:", err);
+    }
+  };
+
+  fetchStats();
+}, [isManager]);
+
+
+
   return (
     <div className="space-y-8">
       <HeaderTitle
@@ -175,6 +195,37 @@ const Leave = () => {
               : "My Leaves"
         }
       />
+
+        {/* Leave Summary Section */}
+{!(isAdmin) && (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4 }}
+    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+  >
+  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 flex flex-col items-center justify-center">
+    <p className="text-sm text-gray-500">Total Leaves</p>
+    <h3 className="text-2xl font-bold text-[#006D3C]">{stats.totalLeaves}</h3>
+  </div>
+
+  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 flex flex-col items-center justify-center">
+    <p className="text-sm text-gray-500">Used</p>
+    <h3 className="text-2xl font-bold text-[#E53E3E]">{stats.used}</h3>
+  </div>
+
+  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 flex flex-col items-center justify-center">
+    <p className="text-sm text-gray-500">Remaining</p>
+    <h3 className="text-2xl font-bold text-[#3182CE]">{stats.remaining}</h3>
+  </div>
+
+  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 flex flex-col items-center justify-center">
+    <p className="text-sm text-gray-500">Comp Off</p>
+    <h3 className="text-2xl font-bold text-[#D69E2E]">{stats.compOff}</h3>
+  </div>
+</motion.div>
+)}
+
 
       <ApplyLeaveForm
         INITIAL_FORM_STATE={INITIAL_FORM_STATE}
