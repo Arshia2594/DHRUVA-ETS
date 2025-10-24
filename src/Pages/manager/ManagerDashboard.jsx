@@ -5,7 +5,7 @@ import useAuth from "../../hooks/useAuth";
 import UpcomingDeadlines from "../../components/manager/UpcomingDeadlines";
 import TimesheetSummary from "../../components/manager/TimesheetSummary";
 import RecentEntriesTable from "../../components/manager/RecentEntriesTable";
-import { adaptProjects, adaptEntries } from "../../utils/adapters"; // Removed adaptSummary
+import { adaptProjects, adaptEntries } from "../../utils/adapters"; 
 import {
   CheckCircleIcon,
   ClipboardDocumentListIcon,

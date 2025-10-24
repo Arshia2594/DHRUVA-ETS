@@ -111,8 +111,8 @@ const TimeSheetTracker = () => {
             tabStyles={{
               default:
                 "relative px-4 py-3 font-medium text-gray-700 dark:text-gray-200 transition-colors duration-200",
-              active: "text-green-700 dark:text-green-400 font-semibold",
-              hover: "hover:text-green-700 dark:hover:text-green-400",
+              active: "text-green-600 dark:text-green-400 font-semibold",
+              hover: "hover:text-green-600 dark:hover:text-green-400",
             }}
             indicatorColor="bg-green-600"
           />
@@ -122,8 +122,8 @@ const TimeSheetTracker = () => {
               <div className="flex gap-3 mt-3">
                 <MUIButton
                   onClick={handleOpen}
-                  bgColor="bg-green-600"
-                  hoverColor="hover:bg-green-700"
+                  bgColor="bg-green-500"
+                  hoverColor="hover:bg-green-600"
                   className="flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-md"
                 >
                   <PlusCircleIcon className="w-5 h-5" />
