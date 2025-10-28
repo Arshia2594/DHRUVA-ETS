@@ -1,62 +1,50 @@
-
-import { useField } from "formik";
+import React from "react";
 import ReactDatePicker from "react-datepicker";
 import { CalendarIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import "react-datepicker/dist/react-datepicker.css";
 
-const FormikDatePicker = ({
-  name,
-  label,
-  minDate,
-  maxDate,
-  showClearButton = true,
-  dateFormat = "dd/MM/yyyy",
-  ...props
-}) => {
-  const [field, meta, helpers] = useField(name);
-  const hasError = meta.touched && meta.error;
+const FilterDatePicker = ({ name, value, onChange }) => {
+  const handleChange = (date) => {
+    const formattedDate = date ? date.toISOString().split("T")[0] : "";
+    onChange(formattedDate);
+  };
 
   return (
-    <div className="w-full">
-      {label && (
-        <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
-          {label}
-        </label>
-      )}
+    <div className="relative w-full">
+      {/* Calendar Input */}
+      <ReactDatePicker
+        selected={value ? new Date(value) : null}
+        onChange={handleChange}
+        dateFormat="dd/MM/yyyy"
+        placeholderText="Select date"
+        name={name}
+        className="w-full h-10 px-3 pl-10 pr-8 rounded-md border text-sm 
+                   border-gray-300 focus:ring-2 focus:ring-[#006D3C] focus:outline-none
+                   bg-white text-gray-800 
+                   dark:bg-gray-800 dark:text-white dark:border-gray-700"
+        popperClassName="z-[50]"
+        calendarClassName="z-[50]"
+      />
 
-      <div className="relative">
-        <ReactDatePicker
-          selected={field.value ? new Date(field.value) : null}
-          onChange={(date) => helpers.setValue(date)}
-          dateFormat={dateFormat}
-          minDate={minDate}
-          maxDate={maxDate}
-          className={`w-full h-10 px-3 pl-10 rounded-md border text-sm
-            ${hasError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-green-600"} 
-            focus:outline-none focus:ring-2
-           bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white`}
-          {...props}
-        />
+      {/* Calendar Icon */}
+      <CalendarIcon
+        className="w-5 h-5 text-gray-400 absolute left-3 top-2.5 pointer-events-none"
+      />
 
-        <CalendarIcon className="w-5 h-5 text-gray-400 absolute left-3 top-2.5 pointer-events-none" />
-
-        {showClearButton && field.value && (
-          <button
-            type="button"
-            onClick={() => helpers.setValue(null)}
-            className="absolute right-2 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"
-            aria-label="Clear date"
-          >
-            <XMarkIcon className="w-4 h-4" />
-          </button>
-        )}
-      </div>
-
-      {hasError && (
-        <p className="text-sm text-red-500 mt-1">{meta.error}</p>
+      {/* Clear Button */}
+      {value && (
+        <button
+          type="button"
+          onClick={() => onChange("")}
+          className="absolute right-2 top-2.5 text-gray-400 hover:text-gray-600 
+                     dark:hover:text-gray-300 focus:outline-none"
+          aria-label="Clear date"
+        >
+          <XMarkIcon className="w-4 h-4" />
+        </button>
       )}
     </div>
   );
 };
 
-export default FormikDatePicker;
+export default FilterDatePicker;
