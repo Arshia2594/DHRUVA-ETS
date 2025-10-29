@@ -53,7 +53,7 @@ const LogIn = () => {
         className="w-full max-w-md bg-white border border-gray-300 p-10 rounded-2xl shadow-lg"
       >
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-semibold text-gray-800 tracking-tight">Welcome Back 👋</h1>
+          <h1 className="text-3xl font-semibold text-gray-800 tracking-tight">Welcome Back </h1>
           <p className="text-sm text-gray-500 mt-2">Sign in to your dashboard</p>
         </div>
 
