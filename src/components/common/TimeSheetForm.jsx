@@ -1,13 +1,12 @@
 
 import React, { useState } from "react";
-import { Field, Form } from "formik";
 import dayjs from "dayjs";
 import useAxios from "../../hooks/useAxios";
 import useAuth from "../../hooks/useAuth";
 import Input from "./Input";
 import FormSelect from "./FormSelect";
-import FormikDatePicker from "./FormikDatePicker";
 import FormikTimePicker from "./FormikTimePicker";
+import FilterDatePicker from "./FormikDatePicker";
 
 import {
   GET_PROJECTS_BY_USER_ID,
@@ -18,6 +17,7 @@ import {
 const TimesheetForm = ({ values, setFieldValue }) => {
   const { auth } = useAuth();
 
+  // Select correct project API by role
   const API =
     auth.role === "Manager"
       ? GET_PROJECTS_BY_MANAGER_ID
@@ -26,7 +26,20 @@ const TimesheetForm = ({ values, setFieldValue }) => {
       : GET_ALL_PROJECTS_DETAILS;
 
   const projects = useAxios(API, {}, true);
+
   const [disablePast, setDisablePast] = useState(true);
+
+  // Handle time change
+  const handleTimeChange = (name, newValue) => {
+    const formatted = newValue ? dayjs(newValue).format("HH:mm:ss") : "";
+    setFieldValue(name, formatted);
+  };
+
+  // Handle date change
+  const handleDateChange = (name, newValue) => {
+    const formatted = newValue ? dayjs(newValue).format("YYYY-MM-DD") : "";
+    setFieldValue(name, formatted);
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -58,11 +71,7 @@ const TimesheetForm = ({ values, setFieldValue }) => {
           name="startTime"
           label="Start Time"
           value={values.startTime ? dayjs(`1970-01-01T${values.startTime}`) : null}
-          onChange={(name, newValue) => {
-            const formatTime = (time) => (time ? dayjs(time).format("HH:mm:ss") : "");
-            setFieldValue(name, formatTime(newValue));
-          }}
-          className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+          onChange={(name, newValue) => handleTimeChange(name, newValue)}
         />
       </div>
 
@@ -72,25 +81,24 @@ const TimesheetForm = ({ values, setFieldValue }) => {
           name="endTime"
           label="End Time"
           value={values.endTime ? dayjs(`1970-01-01T${values.endTime}`) : null}
-          onChange={(name, newValue) => {
-            const formatTime = (time) => (time ? dayjs(time).format("HH:mm:ss") : "");
-            setFieldValue(name, formatTime(newValue));
-          }}
-          className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+          onChange={(name, newValue) => handleTimeChange(name, newValue)}
         />
       </div>
 
       {/* Date Picker */}
       <div className="col-span-1 md:col-span-2">
-        <FormikDatePicker
-          name="date"
-          label="Select Date"
-          disableFuture={true}
-          disablePast={disablePast}
-        />
+        <FilterDatePicker
+  name="date"
+  label="Select Date"
+  value={values.date ? new Date(values.date) : new Date()}
+  onChange={(newValue) => handleDateChange("date", newValue)}  // ✅ FIXED
+  disableFuture={false}
+  disablePast={disablePast}
+/>
+
       </div>
 
-      {/* Past Date Toggle */}
+      {/* Allow Past Dates Toggle */}
       <div className="col-span-1 md:col-span-2 flex items-center gap-3 mt-2">
         <label className="flex items-center gap-2 cursor-pointer">
           <input
