@@ -1,36 +1,63 @@
 
-
-
-import React from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import React, { useMemo } from "react";
+import Chart from "react-apexcharts";
+import { motion } from "framer-motion";
 
 const TeamWorkloadSummary = ({ data = [] }) => {
+  // Expected incoming data: [{ Name: "Alice", ProjectCount: 4 }, ...]
+  const series = useMemo(() => {
+    return [
+      {
+        name: "Projects",
+        data: data.map((d) => Number(d.ProjectCount) || 0),
+      },
+    ];
+  }, [data]);
+
+  const options = useMemo(() => ({
+    chart: {
+      type: "bar",
+      toolbar: { show: false },
+      animations: { enabled: true, easing: "easeinout", speed: 500 },
+      zoom: { enabled: false },
+    },
+    plotOptions: {
+      bar: {
+        borderRadius: 8,
+        horizontal: false,
+        columnWidth: "50%",
+      },
+    },
+    dataLabels: { enabled: false },
+    xaxis: { categories: data.map((d) => d.Name || "—"), labels: { rotate: -20, style: { fontSize: "12px" } } },
+    yaxis: { tickAmount: 4 },
+    tooltip: { theme: "light" },
+    colors: ["#4f46e5"],
+    grid: { borderColor: "#e6e6e6" },
+    responsive: [
+      { breakpoint: 1024, options: { plotOptions: { bar: { columnWidth: "60%" } } } },
+      { breakpoint: 640, options: { plotOptions: { bar: { columnWidth: "70%" } } } },
+    ],
+  }), [data]);
+
   return (
-    <section>
-      <h2 className="text-lg font-bold text-gray-700 mb-4">Team Workload Summary</h2>
-      <div className="bg-white rounded-2xl p-6 shadow-md border">
-        {data.length === 0 ? (
-          <p className="text-gray-500 text-sm">No workload data available</p>
-        ) : (
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data}>
-              <XAxis dataKey="Name" tick={{ fontSize: 12 }} />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="ProjectCount" fill="#4f46e5" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-      </div>
-    </section>
+    <motion.section
+      className="bg-white rounded-2xl p-5 shadow-md border"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <h2 className="text-lg font-semibold text-gray-700 mb-4">Team Workload Summary</h2>
+
+      {data.length === 0 ? (
+        <p className="text-gray-500 text-sm">No workload data available</p>
+      ) : (
+        <div className="w-full h-[320px]">
+          <Chart options={options} series={series} type="bar" height="100%" />
+        </div>
+      )}
+    </motion.section>
   );
 };
 
 export default TeamWorkloadSummary;
+
