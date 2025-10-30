@@ -1,6 +1,7 @@
 
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import axiosInstance from "./AxiosInstance";
 import FilterDatePicker from "./FilterDatePicker";
 
@@ -22,9 +23,9 @@ const TeamForm = ({ objectToEdit, setIsCreateUpdate, refetch, onUpdateLocal }) =
 
   const [photoFile, setPhotoFile] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
-  const [departments, setDepartments] = useState([]); //  dynamic department list
+  const [departments, setDepartments] = useState([]);
 
-  //  Fetch Departments from backend
+  // Fetch Departments
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -77,19 +78,19 @@ const TeamForm = ({ objectToEdit, setIsCreateUpdate, refetch, onUpdateLocal }) =
     }
   }, [objectToEdit]);
 
-  // Handle input changes
+  //  Handle Input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  //  Handle file selection
+  //  Handle File Selection
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setPhotoFile(file);
   };
 
-  //  Handle form submit
+  //  Handle Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -106,14 +107,13 @@ const TeamForm = ({ objectToEdit, setIsCreateUpdate, refetch, onUpdateLocal }) =
     ];
 
     for (let field of requiredFields) {
-      const value = formData[field];
-      if (value === null || value === undefined || String(value).trim() === "") {
+      if (!formData[field]?.trim()) {
         alert(`The field "${field}" is required.`);
         return;
       }
     }
 
-    if (!isEdit && (!formData.Password || formData.Password.trim() === "")) {
+    if (!isEdit && !formData.Password?.trim()) {
       alert("Password is required for new users.");
       return;
     }
@@ -125,9 +125,7 @@ const TeamForm = ({ objectToEdit, setIsCreateUpdate, refetch, onUpdateLocal }) =
           data.append(key, formData[key]);
         }
       }
-      if (photoFile) {
-        data.append("Photo", photoFile);
-      }
+      if (photoFile) data.append("Photo", photoFile);
 
       if (isEdit) {
         const response = await axiosInstance.put(
@@ -136,9 +134,9 @@ const TeamForm = ({ objectToEdit, setIsCreateUpdate, refetch, onUpdateLocal }) =
           { headers: { "Content-Type": "multipart/form-data" } }
         );
 
-        if (response.status === 200 && response.data) {
+        if (response.status === 200) {
           const updatedEmployee = { ...objectToEdit, ...formData };
-          if (onUpdateLocal) onUpdateLocal(updatedEmployee);
+          onUpdateLocal?.(updatedEmployee);
           alert("Employee updated successfully!");
         }
       }
@@ -148,56 +146,65 @@ const TeamForm = ({ objectToEdit, setIsCreateUpdate, refetch, onUpdateLocal }) =
     }
   };
 
+  //  Animation Variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  };
+
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-8 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6 border-b pb-2">
+    <motion.div
+      className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8 max-w-3xl mx-auto mt-8 border border-gray-200 dark:border-gray-700"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 border-b border-gray-300 dark:border-gray-700 pb-3 text-center">
         {isEdit ? "Edit Team Member" : "Add Team Member"}
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Personal Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <motion.form
+        onSubmit={handleSubmit}
+        className="space-y-8"
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+      >
+        {/*  Personal Info */}
+        <motion.div variants={fadeInUp} className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <InputField label="First Name" name="FirstName" value={formData.FirstName} onChange={handleChange} />
           <InputField label="Last Name" name="LastName" value={formData.LastName} onChange={handleChange} />
           <InputField label="Email" name="Email" type="email" value={formData.Email} onChange={handleChange} />
           <InputField label="Mobile" name="Mobile" value={formData.Mobile} onChange={handleChange} />
 
-          {/*  Fixed Joining Date (Now Visible) */}
+          {/*  Joining Date */}
           <div>
             <label className="block font-medium mb-1 text-gray-700 dark:text-gray-200">
               Joining Date
             </label>
             <FilterDatePicker
               name="JoiningDate"
-              value={formData.JoiningDate ? new Date(formData.JoiningDate) : null}
-              onChange={(date) =>
+              value={formData.JoiningDate}
+              onChange={(name, value) =>
                 setFormData((prev) => ({
                   ...prev,
-                  JoiningDate: date ? date.toISOString() : "",
+                  JoiningDate: value || "",
                 }))
               }
             />
+
           </div>
 
-          {/*  Employee Status */}
-          <div>
-            <label className="block font-medium mb-1 text-gray-700 dark:text-gray-200">
-              Employee Status
-            </label>
-            <select
-              name="Status"
-              value={formData.Status}
-              onChange={handleChange}
-              className={`border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white p-2 rounded w-full font-semibold ${
-                formData.Status === "Active" ? "text-green-600" : "text-yellow-600"
-              }`}
-            >
-              <option value="Active">Active</option>
-              <option value="Idle">Idle</option>
-            </select>
-          </div>
+          {/*  Status */}
+          <SelectField
+            label="Employee Status"
+            name="Status"
+            value={formData.Status}
+            onChange={handleChange}
+            options={["Active", "Idle"]}
+          />
 
-          {/*  Dynamic Department Dropdown */}
+          {/*  Department */}
           <div>
             <label className="block font-medium mb-1 text-gray-700 dark:text-gray-200">
               Department
@@ -206,7 +213,7 @@ const TeamForm = ({ objectToEdit, setIsCreateUpdate, refetch, onUpdateLocal }) =
               name="Department"
               value={formData.Department}
               onChange={handleChange}
-              className="border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white p-2 rounded w-full"
+              className="border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white p-2 rounded-lg w-full focus:ring-2 focus:ring-green-500 transition-all"
             >
               <option value="">Select Department</option>
               {departments.length > 0 ? (
@@ -238,6 +245,7 @@ const TeamForm = ({ objectToEdit, setIsCreateUpdate, refetch, onUpdateLocal }) =
           />
 
           <InputField label="Username" name="UserName" value={formData.UserName} onChange={handleChange} />
+
           {!isEdit && (
             <InputField
               label="Password"
@@ -247,10 +255,10 @@ const TeamForm = ({ objectToEdit, setIsCreateUpdate, refetch, onUpdateLocal }) =
               onChange={handleChange}
             />
           )}
-        </div>
+        </motion.div>
 
         {/*  Photo Upload */}
-        <div>
+        <motion.div variants={fadeInUp}>
           <label className="block font-medium mb-1 text-gray-700 dark:text-gray-200">
             Profile Photo
           </label>
@@ -258,43 +266,50 @@ const TeamForm = ({ objectToEdit, setIsCreateUpdate, refetch, onUpdateLocal }) =
             type="file"
             accept="image/*"
             onChange={handleFileChange}
-            className="border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white p-2 rounded w-full"
+            className="border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white p-2 rounded-lg w-full focus:ring-2 focus:ring-green-500 transition-all"
           />
+
           {(photoFile || formData.Photo) && (
-            <img
+            <motion.img
               src={
                 photoFile
                   ? URL.createObjectURL(photoFile)
                   : `${import.meta.env.VITE_BASE_API_URL.replace("/api", "")}/uploads/${formData.Photo}`
               }
               alt="Profile"
-              className="w-24 h-24 mt-2 rounded-lg object-cover border border-gray-300"
+              className="w-24 h-24 mt-3 rounded-xl object-cover border-2 border-gray-300 shadow-md"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
             />
           )}
-        </div>
+        </motion.div>
 
-        {/* Buttons */}
-        <div className="flex justify-end gap-4 mt-6">
+        {/*  Buttons */}
+        <motion.div
+          className="flex justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-700"
+          variants={fadeInUp}
+        >
           <button
             type="button"
             onClick={() => setIsCreateUpdate(false)}
-            className="bg-gray-400 hover:bg-gray-500 text-white px-5 py-2 rounded-lg"
+            className="bg-gray-400 hover:bg-gray-500 text-white px-5 py-2.5 rounded-lg transition-all shadow-sm"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-lg"
+            className="bg-green-700 hover:bg-green-800 text-white px-6 py-2.5 rounded-lg shadow-md font-semibold transition-all"
           >
             {isEdit ? "Update" : "Save"}
           </button>
-        </div>
-      </form>
-    </div>
+        </motion.div>
+      </motion.form>
+    </motion.div>
   );
 };
 
-//  Reusable input component
+//  Reusable Input Component
 const InputField = ({ label, name, value, onChange, type = "text" }) => (
   <div>
     <label className="block font-medium mb-1 text-gray-700 dark:text-gray-200">{label}</label>
@@ -304,12 +319,12 @@ const InputField = ({ label, name, value, onChange, type = "text" }) => (
       onChange={onChange}
       type={type}
       placeholder={label}
-      className="border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white p-2 rounded w-full"
+      className="border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white p-2 rounded-lg w-full focus:ring-2 focus:ring-green-500 transition-all"
     />
   </div>
 );
 
-// Reusable select component
+//  Reusable Select Component
 const SelectField = ({ label, name, value, onChange, options }) => (
   <div>
     <label className="block font-medium mb-1 text-gray-700 dark:text-gray-200">{label}</label>
@@ -317,7 +332,7 @@ const SelectField = ({ label, name, value, onChange, options }) => (
       name={name}
       value={value}
       onChange={onChange}
-      className="border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white p-2 rounded w-full"
+      className="border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white p-2 rounded-lg w-full focus:ring-2 focus:ring-green-500 transition-all"
     >
       <option value="">Select {label}</option>
       {options.map((opt) => (
@@ -330,3 +345,4 @@ const SelectField = ({ label, name, value, onChange, options }) => (
 );
 
 export default TeamForm;
+
