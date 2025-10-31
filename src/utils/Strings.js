@@ -7,7 +7,8 @@ export const GET_PROJECT_STATUSWISE_COUNT=`/project/get-project-statuswise-count
 
 
 //User's endpoints
-export const GET_ALL_NORMAL_USERS = `/employee/get-all-emplyees`;
+ export const GET_ALL_NORMAL_USERS = `/employee/get-all-emplyees`;
+export const GET_ALL_USERS = "/employee/all";
 
 
 
