@@ -56,7 +56,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// 👇 यही hook आपको import करना है ProjectSummary.jsx में
 export const useAuth = () => useContext(AuthContext);
 
 export default AuthContext;
