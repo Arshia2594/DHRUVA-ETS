@@ -8,7 +8,7 @@ import axiosInstance from "../../components/common/AxiosInstance";
 import FilterableCollapsibleTable from "../../components/HOC/FilterableCollapsibleTable";
 import FormSelect from "../../components/common/FormSelect";
 import FilterDatePicker from "../../components/common/FilterDatePicker";
-import { GET_ALL_NORMAL_USERS } from "../../utils/Strings";
+import { GET_ALL_NORMAL_USERS, GET_ALL_USERS } from "../../utils/Strings";
 import { motion } from "framer-motion";
 import ApplyLeaveForm from "../../components/common/ApplyLeaveForm";
 
@@ -19,9 +19,9 @@ const Leave = () => {
   const isAdmin = role === "admin";
   const empId = auth?.empId;
 
-  
+
   // API ENDPOINTS
- 
+
   const endpoint = useMemo(() => {
     if (isAdmin) return `/employee/leave/all`;
     if (isManager) return `/employee/leave/manager/leaves`;
@@ -52,21 +52,38 @@ const Leave = () => {
   const leavesRaw = Array.isArray(leavesResponse)
     ? leavesResponse
     : Array.isArray(leavesResponse?.data)
-    ? leavesResponse.data
-    : [];
+      ? leavesResponse.data
+      : [];
 
-  const usersQueryUrl = GET_ALL_NORMAL_USERS;
+  //const usersQueryUrl = GET_ALL_USERS;
   const department = isAdmin ? "all" : auth?.department || "all";
 
-  const { data: users = [] } = useAxios(
-    usersQueryUrl,
-    { params: { _limit: 200, department } },
+  // const { data: users = [] } = useAxios(
+  //   usersQueryUrl,
+  //   { params: { _limit: 200, department } },
+  //   isAdmin
+  // );
+  const { data: usersResponse = [] } = useAxios(
+    GET_ALL_USERS,
+    {},
     isAdmin
   );
 
+  const users = Array.isArray(usersResponse)
+    ? usersResponse
+    : usersResponse?.data || [];
+
+
+  // console.log("Fetched Users:", users);
+
+  // useEffect(() => {
+  //   console.log("Fetched Users:", usersResponse);
+  //   console.log("Users array:", users);
+  // }, [usersResponse]);
+
 
   // APPLY / UPDATE LEAVE
- 
+
   const applyLeave = async (payload) => {
     try {
       await axiosInstance.post(`/employee/leave/apply`, payload);
@@ -87,7 +104,48 @@ const Leave = () => {
     }
   };
 
- 
+  // Admin: All Employees Leave Summary
+  const [leaveSummaryData, setLeaveSummaryData] = useState([]);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAdmin) {
+      const fetchAllLeaveSummary = async () => {
+        setSummaryLoading(true);
+        try {
+          const res = await axiosInstance.get("/employee/leave/all/stats");
+          const formatted = Array.isArray(res.data)
+            ? res.data.map((item) => ({
+              EmpId: item.EmpId,
+              EmployeeName: item.EmployeeName,
+              totalLeaves: item.totalLeaves,
+              used: item.used,
+              remaining: item.remaining,
+              compOff: item.compOff,
+            }))
+            : Array.isArray(res.data?.data)
+              ? res.data.data.map((item) => ({
+                EmpId: item.EmpId,
+                EmployeeName: item.EmployeeName,
+                totalLeaves: item.totalLeaves,
+                used: item.used,
+                remaining: item.remaining,
+                compOff: item.compOff,
+              }))
+              : [];
+
+          setLeaveSummaryData(formatted);
+        } catch (err) {
+          console.error("Error fetching all leave summary:", err);
+        } finally {
+          setSummaryLoading(false);
+        }
+      };
+      fetchAllLeaveSummary();
+    }
+  }, [isAdmin]);
+
+
   // FORM CONFIG
 
   const INITIAL_FORM_STATE = {
@@ -142,13 +200,12 @@ const Leave = () => {
           : "-",
         Status: (
           <span
-            className={`px-3 py-1 rounded-full text-sm font-semibold ${
-              status === "Approved"
+            className={`px-3 py-1 rounded-full text-sm font-semibold ${status === "Approved"
                 ? "bg-green-100 text-green-700"
                 : status === "Rejected"
-                ? "bg-red-100 text-red-700"
-                : "bg-yellow-100 text-yellow-700"
-            }`}
+                  ? "bg-red-100 text-red-700"
+                  : "bg-yellow-100 text-yellow-700"
+              }`}
           >
             {status}
           </span>
@@ -184,8 +241,8 @@ const Leave = () => {
     const data = Array.isArray(managerLeavesResponse)
       ? managerLeavesResponse
       : Array.isArray(managerLeavesResponse?.data)
-      ? managerLeavesResponse.data
-      : [];
+        ? managerLeavesResponse.data
+        : [];
 
     return data.map((l) => ({
       ...l,
@@ -197,13 +254,12 @@ const Leave = () => {
         : "-",
       Status: (
         <span
-          className={`px-3 py-1 rounded-full text-sm font-semibold ${
-            l.Status === "Approved"
+          className={`px-3 py-1 rounded-full text-sm font-semibold ${l.Status === "Approved"
               ? "bg-green-100 text-green-700"
               : l.Status === "Rejected"
-              ? "bg-red-100 text-red-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
+                ? "bg-red-100 text-red-700"
+                : "bg-yellow-100 text-yellow-700"
+            }`}
         >
           {l.Status || "Pending"}
         </span>
@@ -238,7 +294,7 @@ const Leave = () => {
     ...(isManager || isAdmin ? [{ field: "actions", headerName: "Action" }] : []),
   ];
 
- 
+
   // LEAVE STATS
 
   const [stats, setStats] = useState({
@@ -262,7 +318,7 @@ const Leave = () => {
     fetchStats();
   }, [isManager]);
 
-  
+
   // RENDER
 
   return (
@@ -272,8 +328,8 @@ const Leave = () => {
           isAdmin
             ? "All Leave Requests"
             : isManager
-            ? "My Leaves & Approvals"
-            : "My Leaves"
+              ? "My Leaves & Approvals"
+              : "My Leaves"
         }
       />
 
@@ -325,7 +381,7 @@ const Leave = () => {
           transition={{ duration: 0.4 }}
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 border border-gray-100 dark:border-gray-700"
         >
-          
+
           <FilterableCollapsibleTable
             title="My Leaves"
             data={managerOwnLeaves}
@@ -365,6 +421,36 @@ const Leave = () => {
           <p className="text-center text-gray-500 text-sm mt-3">Loading leaves...</p>
         )}
       </motion.div>
+      {/*  All Employees Leave Summary (Admin Only) */}
+      {isAdmin && (
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 border border-gray-100 dark:border-gray-700"
+        >
+          <FilterableCollapsibleTable
+            title="All Employees Leave Summary"
+            data={leaveSummaryData}
+            columns={[
+              { field: "EmpId", headerName: "Employee ID" },
+              { field: "EmployeeName", headerName: "Employee Name" },
+              { field: "totalLeaves", headerName: "Total Leaves" },
+              { field: "used", headerName: "Used" },
+              { field: "remaining", headerName: "Remaining" },
+              { field: "compOff", headerName: "Comp-Off" },
+            ]}
+            filterFields={["EmployeeName"]}
+          />
+
+          {summaryLoading && (
+            <p className="text-center text-gray-500 text-sm mt-3">
+              Loading leave summary...
+            </p>
+          )}
+        </motion.div>
+      )}
+
     </div>
   );
 };
