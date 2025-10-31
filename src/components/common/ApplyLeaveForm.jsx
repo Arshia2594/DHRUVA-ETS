@@ -105,6 +105,7 @@ const ApplyLeaveForm = ({
                       <option value="Sick Leave">Sick Leave</option>
                       <option value="Casual Leave">Casual Leave</option>
                       <option value="Earned Leave">Earned Leave</option>
+                       <option value="Comp Off">Comp Off</option>
                     </select>
                   </div>
 
