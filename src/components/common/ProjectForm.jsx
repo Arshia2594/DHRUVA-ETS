@@ -47,7 +47,7 @@
 //       ProjectEndDate: objectToEdit?.ProjectEndDate,
 //       Members: objectToEdit?.Members?.map((member) => member.EmpId) || [],
 //       MembersAvatar: objectToEdit?.MembersAvatar,
-     
+
 //     }
 //     : INITIAL_FORM_STATE;
 
@@ -200,10 +200,10 @@ const ProjectForm = ({ setIsCreateUpdate, objectToEdit }) => {
 
   const FORM_STATE = objectToEdit
     ? {
-        ...INITIAL_FORM_STATE,
-        ...objectToEdit,
-        Members: objectToEdit?.Members?.map((m) => m.EmpId) || [],
-      }
+      ...INITIAL_FORM_STATE,
+      ...objectToEdit,
+      Members: objectToEdit?.Members?.map((m) => m.EmpId) || [],
+    }
     : INITIAL_FORM_STATE;
 
   const createProject = useAxios("/project/create-project", { method: "POST" }, false);
@@ -225,12 +225,25 @@ const ProjectForm = ({ setIsCreateUpdate, objectToEdit }) => {
         validationSchema={FORM_VALIDATION}
         enableReinitialize
         onSubmit={(values, { setSubmitting, resetForm }) => {
-          if (objectToEdit) updateProject.refetch({ data: values });
-          else createProject.refetch({ data: values });
+          const formattedValues = {
+            ...values,
+            ProjectStartDate: values.ProjectStartDate
+              ? values.ProjectStartDate
+              : "",
+            ProjectEndDate: values.ProjectEndDate
+              ? values.ProjectEndDate
+              : "",
+          };
+
+          if (objectToEdit) updateProject.refetch({ data: formattedValues });
+          else createProject.refetch({ data: formattedValues });
+
           setSubmitting(false);
           resetForm();
           setIsCreateUpdate(false);
         }}
+
+
       >
         {({ handleSubmit, isSubmitting }) => (
           <Form onSubmit={handleSubmit} className="space-y-10">
@@ -260,18 +273,28 @@ const ProjectForm = ({ setIsCreateUpdate, objectToEdit }) => {
               />
             </div>
 
-            {/* Members + Dates Row  */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-end">
-              <div>
-                <DepartmentMembersSelect />
-              </div>
-              <div>
-                <FilterDatePicker name="ProjectStartDate" label="Start Date" />
-              </div>
-              <div>
-                <FilterDatePicker name="ProjectEndDate" label="End Date" />
-              </div>
-            </div>
+            {/* Members + Dates Row */}
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+  <div className="flex flex-col">
+    <DepartmentMembersSelect />
+  </div>
+
+  <div className="flex flex-col">
+    <FilterDatePicker
+      name="ProjectStartDate"
+      label="Project Start Date"
+      placeholder="Select start date"
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <FilterDatePicker
+      name="ProjectEndDate"
+      label="Project End Date"
+      placeholder="Select end date"
+    />
+  </div>
+</div>
 
             {/* Action Buttons  */}
             <div className="flex justify-end gap-4 pt-6 border-t border-gray-100 dark:border-gray-700">
