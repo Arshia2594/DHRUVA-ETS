@@ -11,6 +11,13 @@ import FilterDatePicker from "../../components/common/FilterDatePicker";
 import { GET_ALL_NORMAL_USERS, GET_ALL_USERS } from "../../utils/Strings";
 import { motion } from "framer-motion";
 import ApplyLeaveForm from "../../components/common/ApplyLeaveForm";
+import {
+  CalendarDaysIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  GiftIcon,
+} from "@heroicons/react/24/outline";
+
 
 const Leave = () => {
   const { auth } = useAuth();
@@ -201,10 +208,10 @@ const Leave = () => {
         Status: (
           <span
             className={`px-3 py-1 rounded-full text-sm font-semibold ${status === "Approved"
-                ? "bg-green-100 text-green-700"
-                : status === "Rejected"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-yellow-100 text-yellow-700"
+              ? "bg-green-100 text-green-700"
+              : status === "Rejected"
+                ? "bg-red-100 text-red-700"
+                : "bg-yellow-100 text-yellow-700"
               }`}
           >
             {status}
@@ -255,10 +262,10 @@ const Leave = () => {
       Status: (
         <span
           className={`px-3 py-1 rounded-full text-sm font-semibold ${l.Status === "Approved"
-              ? "bg-green-100 text-green-700"
-              : l.Status === "Rejected"
-                ? "bg-red-100 text-red-700"
-                : "bg-yellow-100 text-yellow-700"
+            ? "bg-green-100 text-green-700"
+            : l.Status === "Rejected"
+              ? "bg-red-100 text-red-700"
+              : "bg-yellow-100 text-yellow-700"
             }`}
         >
           {l.Status || "Pending"}
@@ -333,35 +340,74 @@ const Leave = () => {
         }
       />
 
-      {/* Leave Summary */}
+      {/* LEAVE SUMMARY (for employee / manager view) */}
       {!isAdmin && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          transition={{ duration: 0.6 }}
+          className="border-t border-gray-200 dark:border-gray-700 pt-8 mt-6"
         >
-          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 flex flex-col items-center justify-center">
-            <p className="text-sm text-gray-500">Total Leaves</p>
-            <h3 className="text-2xl font-bold text-[#006D3C]">{stats.totalLeaves}</h3>
-          </div>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
+            Leave Summary
+          </h2>
 
-          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 flex flex-col items-center justify-center">
-            <p className="text-sm text-gray-500">Used</p>
-            <h3 className="text-2xl font-bold text-[#E53E3E]">{stats.used}</h3>
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Total Leaves */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-col items-center justify-center border border-gray-100 dark:border-gray-700"
+            >
+              <CalendarDaysIcon className="w-8 h-8 text-green-600 mb-2" />
+              <p className="text-gray-600 dark:text-gray-400 font-medium">Total Leaves</p>
+              <h3 className="text-3xl font-bold text-green-600 mt-1">
+                {stats.totalLeaves || 0}
+              </h3>
+            </motion.div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 flex flex-col items-center justify-center">
-            <p className="text-sm text-gray-500">Remaining</p>
-            <h3 className="text-2xl font-bold text-[#3182CE]">{stats.remaining}</h3>
-          </div>
+            {/* Used */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-col items-center justify-center border border-gray-100 dark:border-gray-700"
+            >
+              <CheckCircleIcon className="w-8 h-8 text-red-500 mb-2" />
+              <p className="text-gray-600 dark:text-gray-400 font-medium">Used</p>
+              <h3 className="text-3xl font-bold text-red-500 mt-1">
+                {stats.used || 0}
+              </h3>
+            </motion.div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 flex flex-col items-center justify-center">
-            <p className="text-sm text-gray-500">Comp Off</p>
-            <h3 className="text-2xl font-bold text-[#D69E2E]">{stats.compOff}</h3>
+            {/* Remaining */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-col items-center justify-center border border-gray-100 dark:border-gray-700"
+            >
+              <ClockIcon className="w-8 h-8 text-blue-600 mb-2" />
+              <p className="text-gray-600 dark:text-gray-400 font-medium">Remaining</p>
+              <h3 className="text-3xl font-bold text-blue-600 mt-1">
+                {stats.remaining || 0}
+              </h3>
+            </motion.div>
+
+            {/* Comp Off */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-col items-center justify-center border border-gray-100 dark:border-gray-700"
+            >
+              <GiftIcon className="w-8 h-8 text-yellow-500 mb-2" />
+              <p className="text-gray-600 dark:text-gray-400 font-medium">Comp Off</p>
+              <h3 className="text-3xl font-bold text-yellow-500 mt-1">
+                {stats.compOff || 0}
+              </h3>
+            </motion.div>
           </div>
         </motion.div>
       )}
+
 
       {/* Apply Leave Form */}
       <ApplyLeaveForm
