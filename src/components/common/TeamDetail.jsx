@@ -39,12 +39,17 @@ const TeamDetails = () => {
 
  
   const {
-    data: leaveStats = {},
-    loading: leaveStatsLoading,
-    error: leaveStatsError,
-  } = useAxios(`/employee/leave/stats`, {}, true, [empId]); // Removed /${empId}
+  data: allLeaveStats = [],
+  loading: leaveStatsLoading,
+  error: leaveStatsError,
+} = useAxios(`/employee/leave/all/stats`, {}, true, [empId]);
 
-  // Prepare project dropdown options
+const leaveStats =
+  allLeaveStats.find((emp) => emp.EmpId === Number(empId)) || {};
+
+console.log("Filtered Leave Stats:", leaveStats);
+
+ // Prepare project dropdown options
   const projectOptions = useMemo(() => {
     if (!projectData || !Array.isArray(projectData)) return [];
     return projectData.map((proj) => ({ label: proj.ProjectName, value: proj.ProjectName }));
