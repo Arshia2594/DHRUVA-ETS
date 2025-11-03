@@ -8,6 +8,7 @@ import { exportToExcel, exportToPDF } from "../../utils/exportUtils";
 import { useMemo } from "react";
 import FilterDatePicker from "../../components/common/FilterDatePicker";
 import { CalendarDaysIcon, CheckCircleIcon, ClockIcon, GiftIcon } from "@heroicons/react/24/outline";
+import HeaderTitle from "./HeaderTitle";
 
 const TeamDetails = () => {
   const { empId } = useParams();
@@ -87,11 +88,9 @@ console.log("Filtered Leave Stats:", leaveStats);
 
   return (
     <div className="p-6 space-y-8">
-      {/* EMPLOYEE LEAVE SUMMARY */}
-<div className="border-t border-gray-200 dark:border-gray-700 pt-8 mt-10">
-  <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
-    Employee Leave Summary
-  </h2>
+{/* EMPLOYEE LEAVE SUMMARY */}
+<div className="mt-2">
+  <HeaderTitle title="Employee Leave Summary" />
 
   {leaveStatsLoading ? (
     <p className="text-gray-500">Loading leave summary...</p>
@@ -100,35 +99,44 @@ console.log("Filtered Leave Stats:", leaveStats);
   ) : (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* Total Leaves */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-col items-center justify-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
-        <CalendarDaysIcon className="w-8 h-8 text-green-600 mb-2" />
-        <p className="text-gray-600 dark:text-gray-400 font-medium">Total Leaves</p>
-        <h3 className="text-3xl font-bold text-green-600 mt-1">{leaveStats.totalLeaves || 0}</h3>
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+        <CalendarDaysIcon className="w-8 h-8 text-green-600 mr-4" />
+        <div>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">Total Leaves</p>
+          <h3 className="text-3xl font-bold text-green-600 mt-1">{leaveStats.totalLeaves || 0}</h3>
+        </div>
       </div>
 
       {/* Used */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-col items-center justify-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
-        <CheckCircleIcon className="w-8 h-8 text-red-500 mb-2" />
-        <p className="text-gray-600 dark:text-gray-400 font-medium">Used</p>
-        <h3 className="text-3xl font-bold text-red-500 mt-1">{leaveStats.used || 0}</h3>
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+        <CheckCircleIcon className="w-8 h-8 text-red-500 mr-4" />
+        <div>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">Used</p>
+          <h3 className="text-3xl font-bold text-red-500 mt-1">{leaveStats.used || 0}</h3>
+        </div>
       </div>
 
       {/* Remaining */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-col items-center justify-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
-        <ClockIcon className="w-8 h-8 text-blue-600 mb-2" />
-        <p className="text-gray-600 dark:text-gray-400 font-medium">Remaining</p>
-        <h3 className="text-3xl font-bold text-blue-600 mt-1">{leaveStats.remaining || 0}</h3>
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+        <ClockIcon className="w-8 h-8 text-blue-600 mr-4" />
+        <div>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">Remaining</p>
+          <h3 className="text-3xl font-bold text-blue-600 mt-1">{leaveStats.remaining || 0}</h3>
+        </div>
       </div>
 
       {/* Comp Off */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-col items-center justify-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
-        <GiftIcon className="w-8 h-8 text-yellow-500 mb-2" />
-        <p className="text-gray-600 dark:text-gray-400 font-medium">Comp Off</p>
-        <h3 className="text-3xl font-bold text-yellow-500 mt-1">{leaveStats.compOff || 0}</h3>
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+        <GiftIcon className="w-8 h-8 text-yellow-500 mr-4" />
+        <div>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">Comp Off</p>
+          <h3 className="text-3xl font-bold text-yellow-500 mt-1">{leaveStats.compOff || 0}</h3>
+        </div>
       </div>
     </div>
   )}
 </div>
+
       {/* EMPLOYEE DETAILS */}
       {!showTimeSheet && (
         <>
