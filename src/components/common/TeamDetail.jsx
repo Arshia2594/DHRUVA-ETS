@@ -38,19 +38,19 @@ const TeamDetails = () => {
     [empDetails?.department]
   );
 
- 
+
   const {
-  data: allLeaveStats = [],
-  loading: leaveStatsLoading,
-  error: leaveStatsError,
-} = useAxios(`/employee/leave/all/stats`, {}, true, [empId]);
+    data: allLeaveStats = [],
+    loading: leaveStatsLoading,
+    error: leaveStatsError,
+  } = useAxios(`/employee/leave/all/stats`, {}, true, [empId]);
 
-const leaveStats =
-  allLeaveStats.find((emp) => emp.EmpId === Number(empId)) || {};
+  const leaveStats =
+    allLeaveStats.find((emp) => emp.EmpId === Number(empId)) || {};
 
-console.log("Filtered Leave Stats:", leaveStats);
+  console.log("Filtered Leave Stats:", leaveStats);
 
- // Prepare project dropdown options
+  // Prepare project dropdown options
   const projectOptions = useMemo(() => {
     if (!projectData || !Array.isArray(projectData)) return [];
     return projectData.map((proj) => ({ label: proj.ProjectName, value: proj.ProjectName }));
@@ -88,60 +88,64 @@ console.log("Filtered Leave Stats:", leaveStats);
 
   return (
     <div className="p-6 space-y-8">
-{/* EMPLOYEE LEAVE SUMMARY */}
-<div className="mt-2">
-  <HeaderTitle title="Employee Leave Summary" />
+      {/* EMPLOYEE LEAVE SUMMARY */}
 
-  {leaveStatsLoading ? (
-    <p className="text-gray-500">Loading leave summary...</p>
-  ) : leaveStatsError ? (
-    <p className="text-red-500">Failed to fetch leave summary.</p>
-  ) : (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {/* Total Leaves */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
-        <CalendarDaysIcon className="w-8 h-8 text-green-600 mr-4" />
-        <div>
-          <p className="text-gray-600 dark:text-gray-400 font-medium">Total Leaves</p>
-          <h3 className="text-3xl font-bold text-green-600 mt-1">{leaveStats.totalLeaves || 0}</h3>
-        </div>
-      </div>
+      {showTimeSheet && (
+        <div className="mt-2">
+          <HeaderTitle title="Employee Leave Summary" />
 
-      {/* Used */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
-        <CheckCircleIcon className="w-8 h-8 text-red-500 mr-4" />
-        <div>
-          <p className="text-gray-600 dark:text-gray-400 font-medium">Used</p>
-          <h3 className="text-3xl font-bold text-red-500 mt-1">{leaveStats.used || 0}</h3>
-        </div>
-      </div>
+          {leaveStatsLoading ? (
+            <p className="text-gray-500">Loading leave summary...</p>
+          ) : leaveStatsError ? (
+            <p className="text-red-500">Failed to fetch leave summary.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Total Leaves */}
+              <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                <CalendarDaysIcon className="w-8 h-8 text-green-600 mr-4" />
+                <div>
+                  <p className="text-gray-600 dark:text-gray-400 font-medium">Total Leaves</p>
+                  <h3 className="text-3xl font-bold text-green-600 mt-1">{leaveStats.totalLeaves || 0}</h3>
+                </div>
+              </div>
 
-      {/* Remaining */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
-        <ClockIcon className="w-8 h-8 text-blue-600 mr-4" />
-        <div>
-          <p className="text-gray-600 dark:text-gray-400 font-medium">Remaining</p>
-          <h3 className="text-3xl font-bold text-blue-600 mt-1">{leaveStats.remaining || 0}</h3>
-        </div>
-      </div>
+              {/* Used */}
+              <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                <CheckCircleIcon className="w-8 h-8 text-red-500 mr-4" />
+                <div>
+                  <p className="text-gray-600 dark:text-gray-400 font-medium">Used</p>
+                  <h3 className="text-3xl font-bold text-red-500 mt-1">{leaveStats.used || 0}</h3>
+                </div>
+              </div>
 
-      {/* Comp Off */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
-        <GiftIcon className="w-8 h-8 text-yellow-500 mr-4" />
-        <div>
-          <p className="text-gray-600 dark:text-gray-400 font-medium">Comp Off</p>
-          <h3 className="text-3xl font-bold text-yellow-500 mt-1">{leaveStats.compOff || 0}</h3>
+              {/* Remaining */}
+              <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                <ClockIcon className="w-8 h-8 text-blue-600 mr-4" />
+                <div>
+                  <p className="text-gray-600 dark:text-gray-400 font-medium">Remaining</p>
+                  <h3 className="text-3xl font-bold text-blue-600 mt-1">{leaveStats.remaining || 0}</h3>
+                </div>
+              </div>
+
+              {/* Comp Off */}
+              <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex items-center border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                <GiftIcon className="w-8 h-8 text-yellow-500 mr-4" />
+                <div>
+                  <p className="text-gray-600 dark:text-gray-400 font-medium">Comp Off</p>
+                  <h3 className="text-3xl font-bold text-yellow-500 mt-1">{leaveStats.compOff || 0}</h3>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-    </div>
-  )}
-</div>
+      )}
 
       {/* EMPLOYEE DETAILS */}
       {!showTimeSheet && (
         <>
           <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700">
             <PageTitle title="Employee Details" />
+
             {empLoading ? (
               <p>Loading employee details...</p>
             ) : empError ? (
@@ -155,6 +159,7 @@ console.log("Filtered Leave Stats:", leaveStats);
                     className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600 shadow"
                   />
                 </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4 text-sm w-full">
                   <div>
                     <p className="text-gray-500 dark:text-gray-400">Full Name</p>
@@ -190,6 +195,58 @@ console.log("Filtered Leave Stats:", leaveStats);
               </div>
             )}
           </div>
+
+          {/*  SKILLS */}
+          <div className="bg-white dark:bg-gray-800 mt-4 shadow-md rounded-lg p-6 border">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">Skills</h2>
+            <div className="flex flex-wrap gap-2">
+              {empDetails?.Skills?.length > 0 ? (
+                empDetails.Skills.map((skill, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full"
+                  >
+                    {skill}
+                  </span>
+                ))
+              ) : (
+                <p className="text-gray-500">No skills added</p>
+              )}
+            </div>
+          </div>
+
+        {/*  EDUCATION */}
+          <div className="bg-white dark:bg-gray-800 mt-4 shadow-md rounded-lg p-6 border">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">Education</h2>
+            {empDetails?.Education?.length > 0 ? (
+              <ul className="space-y-2">
+                {empDetails.Education.map((edu, i) => (
+                  <li key={i} className="text-sm text-gray-700 dark:text-gray-300">
+                    <strong>{edu.Qualification}</strong> - {edu.Institute} ({edu.YearOfPassing})
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No education records</p>
+            )}
+          </div>
+
+          {/*  EXPERIENCE */}
+          <div className="bg-white dark:bg-gray-800 mt-4 shadow-md rounded-lg p-6 border">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">Experience</h2>
+            {empDetails?.Experience?.length > 0 ? (
+              <ul className="space-y-2">
+                {empDetails.Experience.map((exp, i) => (
+                  <li key={i} className="text-sm text-gray-700 dark:text-gray-300">
+                    <strong>{exp.CompanyName}</strong> - {exp.Role} ({exp.Duration})
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className= "text-gray-500">No experience records</p>
+            )}
+          </div>
+
         </>
       )}
 
@@ -245,3 +302,4 @@ console.log("Filtered Leave Stats:", leaveStats);
 };
 
 export default TeamDetails;
+
