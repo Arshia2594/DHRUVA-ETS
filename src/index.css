@@ -134,3 +134,24 @@ button, .hoverable {
   background-color: #16a34a !important;
   color: white !important;
 }
+
+/* FullCalendar top toolbar buttons */
+.fc .fc-toolbar button {
+  @apply bg-green-600 text-white rounded-md px-3 py-1 font-medium shadow-sm hover:bg-green-700 transition;
+}
+
+/* Today button special style optional */
+.fc .fc-toolbar button.fc-today-button {
+  @apply bg-gray-800 hover:bg-gray-900;
+}
+
+/* Active tab (month/week/day/list) */
+.fc .fc-button-active {
+  @apply bg-green-700 !important;
+}
+
+/* Calendar header title style */
+.fc .fc-toolbar-title {
+  @apply text-xl font-semibold text-gray-800;
+}
+
