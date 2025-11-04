@@ -1,9 +1,8 @@
 
-
 import React, { useState, useEffect } from "react";
 import { useField } from "formik";
 import Flatpickr from "react-flatpickr";
-import "flatpickr/dist/themes/airbnb.css"; // Try: airbnb | material_blue | dark
+import "flatpickr/dist/themes/airbnb.css";
 import { ClockIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const FormikTimePicker = ({ label, ...props }) => {
@@ -16,7 +15,7 @@ const FormikTimePicker = ({ label, ...props }) => {
   }, [field.value]);
 
   return (
-    <div className="flex flex-col gap-1.5 w-full relative">
+    <div className="flex flex-col gap-1.5 w-full">
       {label && (
         <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
           {label}
@@ -24,12 +23,12 @@ const FormikTimePicker = ({ label, ...props }) => {
       )}
 
       <div
-        className={`relative flex items-center rounded-xl border ${
-          hasError ? "border-red-400" : "border-gray-300"
-        } bg-white dark:bg-gray-900 shadow-sm px-3 py-2 transition-all duration-200 
-        focus-within:ring-2 focus-within:ring-green-400`}
+        className={`relative flex items-center rounded-lg border transition-all duration-200 px-3 py-2 
+        ${hasError ? "border-red-400" : "border-gray-300"} 
+        bg-white dark:bg-gray-800 shadow-sm focus-within:ring-2 focus-within:ring-green-600`}
       >
-        <ClockIcon className="w-5 h-5 text-gray-400 mr-2" />
+        {/* Clock Icon */}
+        <ClockIcon className="w-5 h-5 text-green-600 mr-2 flex-shrink-0" />
 
         <Flatpickr
           value={timeValue}
@@ -39,8 +38,6 @@ const FormikTimePicker = ({ label, ...props }) => {
             dateFormat: "h:i K", // Example: 02:45 PM
             time_24hr: false,
             allowInput: true,
-            clickOpens: true,
-            closeOnSelect: false,
             minuteIncrement: 1,
           }}
           onChange={(selectedDates) => {
@@ -58,9 +55,10 @@ const FormikTimePicker = ({ label, ...props }) => {
               helpers.setValue("");
             }
           }}
-          className="w-full bg-transparent text-sm outline-none text-gray-700 dark:text-gray-100 cursor-pointer"
+          className="w-full bg-transparent text-sm outline-none text-gray-800 dark:text-gray-100 cursor-pointer"
         />
 
+        {/* Clear Button */}
         {timeValue && (
           <button
             type="button"
@@ -68,16 +66,15 @@ const FormikTimePicker = ({ label, ...props }) => {
               setTimeValue("");
               helpers.setValue("");
             }}
-            className="absolute right-3 text-gray-400 hover:text-gray-600"
+            className="absolute right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            aria-label="Clear time"
           >
             <XMarkIcon className="w-4 h-4" />
           </button>
         )}
       </div>
 
-      {hasError && (
-        <p className="text-xs text-red-500 mt-1">{meta.error}</p>
-      )}
+      {hasError && <p className="text-xs text-red-500 mt-1">{meta.error}</p>}
     </div>
   );
 };
