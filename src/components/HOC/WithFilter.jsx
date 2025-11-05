@@ -116,7 +116,7 @@ const withFilter = (WrappedTable) => {
                         <select
                           value={filters[field] ?? ""}
                           onChange={(e) => handleFilterChange(field, e.target.value)}
-                          className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-green-200 focus:outline-none"
+                          className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-green-800 focus:outline-none"
                         >
                           <option value="">{meta.placeholder ?? "All"}</option>
                           {meta.options?.map((opt, optIdx) => (
@@ -145,7 +145,8 @@ const withFilter = (WrappedTable) => {
                         <label className="block text-sm font-medium mb-2 text-gray-700">
                           {meta.label ?? field}
                         </label>
-                        <DateComponent value={filters[field] || ""} onChange={(val) => handleFilterChange(field, val)} />
+                       <DateComponent name={field} value={filters[field] || ""} onChange={(name, val) => handleFilterChange(name, val)} />
+
                       </div>
                     );
                   }
@@ -161,7 +162,7 @@ const withFilter = (WrappedTable) => {
                         value={filters[field] ?? ""}
                         onChange={(e) => handleFilterChange(field, e.target.value)}
                         placeholder={meta.placeholder ?? `Filter by ${meta.label ?? field}`}
-                        className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-green-200 focus:outline-none"
+                        className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
                       />
                     </div>
                   );
