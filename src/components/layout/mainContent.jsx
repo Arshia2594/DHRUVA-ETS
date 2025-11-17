@@ -6,7 +6,7 @@ const MainContent = ({ open, darkMode, children }) => {
     <main
       className={`
         min-h-screen transition-all duration-300 px-6 pt-20
-        ${open ? "ml-[240px]" : "ml-[80px]"}
+        ${open ? "ml-[240px]" : "ml-[64px]"}
         ${darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-800"}
       `}
     >
