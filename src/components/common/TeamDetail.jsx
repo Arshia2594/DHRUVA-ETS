@@ -313,6 +313,7 @@ import { useMemo, useState } from "react";
 import FilterDatePicker from "../../components/common/FilterDatePicker";
 import { CalendarDaysIcon, CheckCircleIcon, ClockIcon, GiftIcon } from "@heroicons/react/24/outline";
 import HeaderTitle from "./HeaderTitle";
+import Swal from "sweetalert2";
 
 const TeamDetails = () => {
   const { empId } = useParams();
@@ -360,6 +361,37 @@ const TeamDetails = () => {
     refetch: refetchEmpLeaves,
   } = useAxios(`/employee/leave/by-emp/${empId}`, {}, true, [empId]);
 
+  const updateLeaveStatus = async (leaveId, status) => {
+  const confirm = await Swal.fire({
+    title: "Are you sure?",
+    text: `You want to mark this leave as ${status}?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: `Yes, ${status}`,
+    cancelButtonText: "Cancel",
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    await axiosInstance.put(
+      `/employee/leave/update-status/${leaveId}`,
+      { status }
+    );
+
+    await Swal.fire({
+      title: "Success!",
+      text: `Leave ${status} successfully.`,
+      icon: "success",
+    });
+
+    refetchEmpLeaves?.();
+  } catch (error) {
+    console.error(error);
+    Swal.fire("Error!", "Something went wrong!", "error");
+  }
+};
+
   // Prepare project dropdown options
   const projectOptions = useMemo(() => {
     if (!projectData || !Array.isArray(projectData)) return [];
@@ -372,6 +404,9 @@ const TeamDetails = () => {
       <p className="font-medium text-gray-900 dark:text-white">{value || "-"}</p>
     </div>
   );
+
+
+  
 
 
   const filterMeta = useMemo(

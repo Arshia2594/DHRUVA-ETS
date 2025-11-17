@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import axiosInstance from "../common/AxiosInstance";
+import Swal from "sweetalert2";
+
 
 const CollapsibleTable = ({
   columns = [],
@@ -16,17 +18,38 @@ const CollapsibleTable = ({
     setOpenRows((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+ 
+
   const handleApproval = async (timesheetId, status) => {
-    try {
-      await axiosInstance.put(
-        `/empTimesheet/manager/approve-timesheet/${timesheetId}`,
-        { approvalStatus: status }
-      );
-      refetch?.();
-    } catch (error) {
-      console.error("Approval failed:", error);
-    }
-  };
+  const confirm = await Swal.fire({
+    title: "Are you sure?",
+    text: `You want to ${status} this timesheet?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: `Yes, ${status}`,
+    cancelButtonText: "Cancel",
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    await axiosInstance.put(
+      `/empTimesheet/manager/approve-timesheet/${timesheetId}`,
+      { approvalStatus: status }
+    );
+
+    await Swal.fire({
+      title: "Success!",
+      text: `Timesheet ${status} successfully.`,
+      icon: "success",
+    });
+
+    refetch?.();
+  } catch (error) {
+    console.error("Approval failed:", error);
+    Swal.fire("Error!", "Something went wrong!", "error");
+  }
+};
 
   const getSafeKey = (row, suffix = "") => {
     const base =
