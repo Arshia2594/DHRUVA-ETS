@@ -93,7 +93,7 @@ const FilterDatePicker = ({
         portalId="root"
         minDate={disablePast ? new Date() : null}
         maxDate={disableFuture ? new Date() : null}
-        className="w-full h-11 pl-11 pr-11 rounded-lg border border-gray-300 
+        className="w-full h-11 pl-10 pr-10 rounded-lg border border-gray-300 
           focus:ring-2 focus:ring-[#006D3C] focus:outline-none 
           bg-white dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 
           text-sm transition-all placeholder-gray-400"
