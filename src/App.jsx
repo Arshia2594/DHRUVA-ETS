@@ -35,6 +35,8 @@ import TeamAdmin from "./Pages/admin/TeamAdmin";
 import Teams from "./Pages/manager/Teams";
 import TeamDetails from "./components/common/TeamDetail";
 import Leave from "./Pages/employee/Leave"
+import EmployeeReport from "./Pages/employee/EmployeeReport";
+import ProfilePage from "./Pages/profile/ProfilePage";
 
 
 // Protected Route Component
@@ -63,6 +65,8 @@ const App = () => {
 
         {/*  Public Route */}
         <Route path="/login" element={<LogIn />} />
+        <Route path="/profile" element={<ProfilePage />} />
+
 
         {/*  Admin Routes */}
         <Route
@@ -113,7 +117,7 @@ const App = () => {
           }
         >
           <Route path="dashboard" element={<EmployeeDashboard />} />
-          <Route path="report" element={<Reports />} />
+          <Route path="report" element={<EmployeeReport />} />
           <Route path="time-tracker" element={<TimeTracking />} />
           <Route path="projects" element={<Projects />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
