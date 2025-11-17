@@ -4,12 +4,13 @@ import { Outlet } from "react-router-dom";
 const MainContent = ({ open, darkMode, children }) => {
   return (
     <main
-      className={`min-h-screen transition-all duration-300 px-6 py-4 ${
-        open ? "ml-[240px]" : "ml-0"
-      } ${darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-800"}`}
+      className={`
+        min-h-screen transition-all duration-300 px-6 pt-20
+        ${open ? "ml-[240px]" : "ml-[80px]"}
+        ${darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-800"}
+      `}
     >
-      <div className="h-16" />
-      <div className="w-full ">
+      <div className="w-full">
         <Outlet />
         {children}
       </div>
