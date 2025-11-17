@@ -11,6 +11,8 @@ import FilterDatePicker from "../../components/common/FilterDatePicker";
 import { GET_ALL_NORMAL_USERS, GET_ALL_USERS } from "../../utils/Strings";
 import { motion } from "framer-motion";
 import ApplyLeaveForm from "../../components/common/ApplyLeaveForm";
+import Swal from "sweetalert2";
+
 import {
   CalendarDaysIcon,
   CheckCircleIcon,
@@ -81,13 +83,6 @@ const Leave = () => {
     : usersResponse?.data || [];
 
 
-  // console.log("Fetched Users:", users);
-
-  // useEffect(() => {
-  //   console.log("Fetched Users:", usersResponse);
-  //   console.log("Users array:", users);
-  // }, [usersResponse]);
-
 
   // APPLY / UPDATE LEAVE
 
@@ -100,16 +95,42 @@ const Leave = () => {
     }
   };
 
+
   const updateLeaveStatus = async (leaveId, status) => {
     try {
-      await axiosInstance.put(`/employee/leave/status/${leaveId}`, {
-        Status: status,
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: `Do you want to mark this leave as ${status}?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: `Yes, ${status}`,
+        cancelButtonText: "Cancel",
       });
-      refetchLeaves();
-    } catch (err) {
-      console.error("Failed to update status:", err);
+
+      if (!result.isConfirmed) return;
+
+      const res = await axiosInstance.put(
+        `/employee/leave/status/${leaveId}`,
+        { Status: status }
+      );
+
+      if (res.status === 200) {
+        await Swal.fire({
+          title: "Success!",
+          text: `Leave ${status} successfully.`,
+          icon: "success",
+        });
+
+        refetchLeaves();
+      } else {
+        Swal.fire("Failed!", "Unable to update leave status.", "error");
+      }
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      Swal.fire("Error!", "Something went wrong!", "error");
     }
   };
+
 
   // Admin: All Employees Leave Summary
   const [leaveSummaryData, setLeaveSummaryData] = useState([]);
@@ -207,7 +228,7 @@ const Leave = () => {
           : "-",
         Status: (
           <span
-            className={`px-3 py-1 rounded-full text-sm font-semibold ${status === "Approved"
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${status === "Approved"
               ? "bg-green-100 text-green-700"
               : status === "Rejected"
                 ? "bg-red-100 text-red-700"
@@ -217,25 +238,35 @@ const Leave = () => {
             {status}
           </span>
         ),
+
+
+
+        //   RIGHT SECTION: APPROVAL BUTTONS 
         actions:
           (isManager || isAdmin) && (
             <div className="flex items-center justify-center gap-2">
               <button
                 onClick={() => updateLeaveStatus(leaveId, "Approved")}
                 disabled={status === "Approved"}
-                className="px-3 py-1 rounded-md bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition disabled:opacity-50"
+                className="px-3 py-1 text-xs font-semibold rounded-md 
+                   border border-green-200 bg-green-50 text-green-800 
+                   hover:bg-green-100 disabled:opacity-50"
               >
                 Approve
               </button>
+
               <button
                 onClick={() => updateLeaveStatus(leaveId, "Rejected")}
                 disabled={status === "Rejected"}
-                className="px-3 py-1 rounded-md bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition disabled:opacity-50"
+                className="px-3 py-1 text-xs font-semibold rounded-md 
+                   border border-red-200 bg-red-50 text-red-800 
+                   hover:bg-red-100 disabled:opacity-50"
               >
                 Reject
               </button>
             </div>
           ),
+
       };
     });
   }, [leavesRaw, isManager, isAdmin]);
@@ -262,15 +293,16 @@ const Leave = () => {
       Status: (
         <span
           className={`px-3 py-1 rounded-full text-sm font-semibold ${l.Status === "Approved"
-            ? "bg-green-100 text-green-700"
-            : l.Status === "Rejected"
-              ? "bg-red-100 text-red-700"
-              : "bg-yellow-100 text-yellow-700"
+              ? "bg-green-100 text-green-700"
+              : l.Status === "Rejected"
+                ? "bg-red-100 text-red-700"
+                : "bg-yellow-100 text-yellow-700"
             }`}
         >
           {l.Status || "Pending"}
         </span>
       ),
+
     }));
   }, [managerLeavesResponse, isManager]);
 
