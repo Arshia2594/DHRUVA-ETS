@@ -206,9 +206,10 @@ const Leave = () => {
   // LEAVES (EMPLOYEES UNDER MANAGER OR SELF)
 
   const leaves = useMemo(() => {
-    const dataToShow = isManager
-      ? leavesRaw.filter((l) => l.User?.EmpId !== empId)
-      : leavesRaw;
+   const dataToShow = isManager
+  ? leavesRaw.filter((l) => (l.User?.EmpId ? l.User.EmpId !== empId : true))
+  : leavesRaw;
+
 
     return (dataToShow || []).map((l) => {
       const status = l.Status || "Pending";
@@ -249,8 +250,8 @@ const Leave = () => {
                 onClick={() => updateLeaveStatus(leaveId, "Approved")}
                 disabled={status === "Approved"}
                 className="px-3 py-1 text-xs font-semibold rounded-md 
-                   border border-green-200 bg-green-50 text-green-800 
-                   hover:bg-green-100 disabled:opacity-50"
+          border border-green-200 bg-green-50 text-green-800 
+          hover:bg-green-100 disabled:opacity-50"
               >
                 Approve
               </button>
@@ -259,15 +260,14 @@ const Leave = () => {
                 onClick={() => updateLeaveStatus(leaveId, "Rejected")}
                 disabled={status === "Rejected"}
                 className="px-3 py-1 text-xs font-semibold rounded-md 
-                   border border-red-200 bg-red-50 text-red-800 
-                   hover:bg-red-100 disabled:opacity-50"
+          border border-red-200 bg-red-50 text-red-800 
+          hover:bg-red-100 disabled:opacity-50"
               >
                 Reject
               </button>
             </div>
           ),
-
-      };
+       };
     });
   }, [leavesRaw, isManager, isAdmin]);
 
@@ -293,10 +293,10 @@ const Leave = () => {
       Status: (
         <span
           className={`px-3 py-1 rounded-full text-sm font-semibold ${l.Status === "Approved"
-              ? "bg-green-100 text-green-700"
-              : l.Status === "Rejected"
-                ? "bg-red-100 text-red-700"
-                : "bg-yellow-100 text-yellow-700"
+            ? "bg-green-100 text-green-700"
+            : l.Status === "Rejected"
+              ? "bg-red-100 text-red-700"
+              : "bg-yellow-100 text-yellow-700"
             }`}
         >
           {l.Status || "Pending"}
