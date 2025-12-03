@@ -14,13 +14,26 @@ export default function TimesheetSummary({ summary }) {
         type: "bar",
         toolbar: { show: false },
         animations: { easing: "easeinout", speed: 800 },
+
+        offsetY: 50,
+        padding: {
+          bottom: 40
+        }
       },
       plotOptions: {
         bar: {
           borderRadius: 8,
           columnWidth: "45%",
-          distributed: true,
+          // distributed: true,
         },
+      },
+      legend: {
+        show: true,
+        position: "bottom",
+        horizontalAlign: "center",
+        offsetY: 30,
+        markers: { radius: 6 },
+        labels: { colors: "#6b7280" },
       },
       grid: {
         borderColor: "#e5e7eb",
@@ -36,6 +49,7 @@ export default function TimesheetSummary({ summary }) {
         ),
         labels: {
           style: { fontSize: "12px", colors: "#6b7280", fontWeight: 500 },
+          offsetY: 15,
         },
       },
       yaxis: {
@@ -52,6 +66,7 @@ export default function TimesheetSummary({ summary }) {
         style: { fontSize: "13px" },
         y: { formatter: (val) => `${val.toFixed(1)} hrs` },
         marker: { show: true },
+
       },
       colors: ["#22c55e", "#3b82f6", "#f59e0b", "#a855f7", "#ef4444"],
     },
@@ -69,6 +84,13 @@ export default function TimesheetSummary({ summary }) {
         type: "donut",
         toolbar: { show: false },
         animations: { easing: "easeinout", speed: 800 },
+
+
+        // fix extra gap
+        offsetY: 50,
+        padding: {
+          bottom: 40
+        }
       },
       labels: pieData.map((p) => p.name),
       legend: {
@@ -76,6 +98,7 @@ export default function TimesheetSummary({ summary }) {
         fontSize: "13px",
         labels: { colors: "#6b7280" },
         markers: { radius: 8 },
+        offsetY: 70,
       },
       tooltip: {
         theme: "light",
@@ -128,11 +151,10 @@ export default function TimesheetSummary({ summary }) {
             <button
               key={key}
               onClick={() => setView(key)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1 transition-all duration-200 ${
-                view === key
-                  ? "bg-green-500 text-white shadow-sm"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1 transition-all duration-200 ${view === key
+                ? "bg-green-500 text-white shadow-sm"
+                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                }`}
             >
               {icon}
               {label}
@@ -155,7 +177,9 @@ export default function TimesheetSummary({ summary }) {
       </div>
 
       {/* Chart Section */}
-      <div className="min-h-[340px] flex items-center justify-center">
+      {/* <div className="min-h-[340px] flex items-center justify-center"> */}
+      <div className="h-[300px] w-full  items-center justify-center">
+
         {view === "bar" ? (
           barData.length > 0 ? (
             <Chart
