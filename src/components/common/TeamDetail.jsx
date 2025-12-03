@@ -520,8 +520,8 @@ const TeamDetails = () => {
         <div className="p-6">
           {/*  TAB 1: EMPLOYEE INFO  */}
           {activeTab === "info" && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-8 space-y-8">
-
+            // <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-8 space-y-8">
+              <div className="p-6 space-y-6">
               {/*  Profile Header  */}
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 border-b border-gray-200 dark:border-gray-700 pb-6">
                 <img
@@ -545,7 +545,8 @@ const TeamDetails = () => {
                     <Info label="Joining Date" value={empDetails.JoiningDate} />
                   </div>
                 </div>
-              </div>
+                 </div>
+            
 
               {/*  Skills Section  */}
               <div className="pb-6 border-b border-gray-200 dark:border-gray-700">
