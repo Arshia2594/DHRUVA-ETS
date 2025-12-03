@@ -1,3 +1,4 @@
+
 import {
   AiOutlineClockCircle,
   AiOutlineCheckCircle,
@@ -32,62 +33,73 @@ const StatCards = ({ timesheetData, leaveData, projectData }) => {
     .reduce((sum, leave) => sum + (leave.TotalDays || 0), 0);
 
   // ----- ACTIVE PROJECTS -----
-  const activeProjects = Array.isArray(projectData)
-    ? projectData.filter((p) => p.Project?.CompletionStatus !== "Completed").length
-    : 0;
+//  const activeProjects = Array.isArray(projectData)
+//   ? projectData.filter((p) => {
+//       const status = p.Project?.CompletionStatus || p.CompletionStatus;
+//       return status !== "Completed";
+//     }).length
+//   : 0;
+const activeProjects = Array.isArray(projectData)
+  ? projectData.filter((p) => p.Project?.CompletionStatus !== "Completed").length
+  : 0;
+
+
 
   const stats = [
     {
       label: "Total Hours Worked",
       value: `${totalHours}:${remainingMinutes.toString().padStart(2, "0")}`,
-      icon: <AiOutlineClockCircle size={26} />,
+      icon: <AiOutlineClockCircle size={28} />,
       color: "text-blue-600",
-      bg: "bg-blue-100/60",
+      numberColor: "text-blue-700",
     },
     {
       label: "% Approved",
       value: `${approvalPercentage}%`,
-      icon: <AiOutlineCheckCircle size={26} />,
+      icon: <AiOutlineCheckCircle size={28} />,
       color: "text-green-600",
-      bg: "bg-green-100/60",
+      numberColor: "text-green-700",
     },
     {
       label: "Leaves Taken",
       value: `${leavesTaken} Days`,
-      icon: <AiOutlineCalendar size={26} />,
+      icon: <AiOutlineCalendar size={28} />,
       color: "text-red-600",
-      bg: "bg-red-100/60",
+      numberColor: "text-red-700",
     },
     {
       label: "Active Projects",
       value: activeProjects,
-      icon: <FiFolder size={26} />,
+      icon: <FiFolder size={28} />,
       color: "text-yellow-600",
-      bg: "bg-yellow-100/60",
+      numberColor: "text-yellow-700",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
       {stats.map((stat, index) => (
         <motion.div
           key={index}
-          whileHover={{ y: -6, scale: 1.03 }}
-          transition={{ type: "spring", stiffness: 260, damping: 18 }}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 
-                     p-6 flex items-center space-x-4 cursor-pointer
-                     shadow-[0_6px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)]
-                     transition-all"
+          whileHover={{ y: -4 }}
+          transition={{ type: "spring", stiffness: 220, damping: 18 }}
+          className="flex items-center gap-5 bg-white shadow-md border border-gray-200 
+                     p-6 rounded-xl cursor-pointer hover:shadow-lg transition-all"
         >
-          <div className={`p-3 rounded-xl ${stat.bg} ${stat.color} shadow-inner`}>
-            {stat.icon}
+          {/* Icon Circle */}
+          <div
+            className={`w-12 h-12 rounded-full border ${stat.color} border-opacity-40
+                        flex items-center justify-center`}
+          >
+            <span className={`${stat.color}`}>{stat.icon}</span>
           </div>
 
+          {/* Text Area */}
           <div>
-            <h2 className="text-3xl font-bold text-gray-800 leading-none tracking-tight">
+            <h2 className={`text-3xl font-bold ${stat.numberColor}`}>
               {stat.value}
             </h2>
-            <p className="text-gray-500 text-sm mt-1 font-medium">{stat.label}</p>
+            <p className="text-gray-500 text-sm font-medium mt-1">{stat.label}</p>
           </div>
         </motion.div>
       ))}
