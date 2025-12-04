@@ -12,9 +12,9 @@ const EmployeeReport = () => {
   const { data: timesheetData, loading: loadingTimesheet } = useAxios(
     `/empTimesheet/get-timesheets?empId=${empId}`
   );
-  // const { data: leaveData, loading: loadingLeave } = useAxios(
-  //   `/employee/leave/my-leaves?empId=${empId}`
-  // );
+  const { data: leaveData, loading: loadingLeave } = useAxios(
+    `/employee/leave/my-leaves?empId=${empId}`
+  );
   const { data: projectData, loading: loadingProjects, error } = useAxios(
     `/project/getProjectsByEmpId/${empId}`
   );
