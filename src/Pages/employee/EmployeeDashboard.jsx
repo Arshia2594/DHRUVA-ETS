@@ -99,7 +99,7 @@ const EmployeeDashboard = () => {
         </motion.div>
 
         {/* Quick Actions */}
-        <motion.div
+        {/* <motion.div
           whileHover={{ y: -5 }}
           className="bg-white p-6 rounded-xl shadow border"
         >
@@ -112,10 +112,10 @@ const EmployeeDashboard = () => {
               Apply Leave
             </button>
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* Upcoming Deadlines */}
-        <motion.div
+        {/* <motion.div
           whileHover={{ y: -5 }}
           className="bg-white p-6 rounded-xl shadow border"
         >
@@ -132,8 +132,8 @@ const EmployeeDashboard = () => {
               </div>
             ))
           )}
-        </motion.div>
-      </div>
+        // </motion.div>*/}
+      </div> 
 
       {/* 3. CHARTS */}
       <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
