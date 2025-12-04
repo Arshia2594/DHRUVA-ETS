@@ -60,13 +60,16 @@ const ProjectCard = ({ projects = [], onEdit, onView }) => {
       animate="visible"
     >
       {projects.map((project, index) => (
-        <motion.div
-          key={project.ProjectId || index}
-          variants={cardVariants}
-          whileHover={{ y: -5, scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden border border-gray-100 dark:border-gray-700"
-        >
+      <motion.div
+  key={project.ProjectId || index}
+  variants={cardVariants}
+  whileHover={{ y: -5, scale: 1.02 }}
+  whileTap={{ scale: 0.98 }}
+  className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 
+             flex flex-col justify-between overflow-hidden border border-gray-100 dark:border-gray-700
+             min-h-[260px] h-full"
+>
+
           {/* Header */}
           <div className="border-b px-4 py-3 bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-800">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white truncate group-hover:text-green-700 transition">

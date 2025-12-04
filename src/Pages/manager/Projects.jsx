@@ -1,6 +1,5 @@
 
-
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import {
@@ -17,7 +16,11 @@ const Projects = () => {
   const { auth } = useAuth();
   const navigate = useNavigate();
 
-  if (!auth) return null;
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("name");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [page, setPage] = useState(1);
+  const perPage = 8;
 
   const [isCreateUpdate, setIsCreateUpdate] = useState(false);
   const [objectToEdit, setObjectToEdit] = useState(null);
@@ -41,6 +44,11 @@ const Projects = () => {
     [isCreateUpdate]
   );
 
+
+  const handleView = (projectId) => {
+    navigate(`/${auth.role.toLowerCase()}/project-details/${projectId}`);
+  };
+
   const handleAddClick = () => {
     setObjectToEdit(null);
     setIsCreateUpdate(true);
@@ -51,43 +59,134 @@ const Projects = () => {
     setIsCreateUpdate(true);
   };
 
-  const handleView = (projectId) => {
-    const role = auth?.role?.toLowerCase();
-    navigate(`/${role}/project-details/${projectId}`);
-  };
+  //  FILTER + SEARCH + SORT + PAGINATION
+  const filteredProjects = useMemo(() => {
+    let data = [...(projects?.data || [])];
+
+    // Search
+    if (search.trim() !== "") {
+      data = data.filter((p) =>
+        p.ProjectName.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Status filter
+    if (statusFilter !== "All") {
+      data = data.filter((p) => p.CompletionStatus === statusFilter);
+    }
+
+    // Sorting
+    if (sortBy === "name") {
+      data.sort((a, b) => a.ProjectName.localeCompare(b.ProjectName));
+    } else if (sortBy === "startDate") {
+      data.sort(
+        (a, b) =>
+          new Date(a.ProjectStartDate) - new Date(b.ProjectStartDate)
+      );
+    }
+
+    return data;
+  }, [projects?.data, search, sortBy, statusFilter]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredProjects.length / perPage);
+  const paginated = filteredProjects.slice(
+    (page - 1) * perPage,
+    page * perPage
+  );
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 transition-colors duration-500">
+    <div className="p-6 min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto">
-        {/* Page Header */}
+
+        {/* HEADER */}
         <HeaderTitle
           title="Projects Overview"
-          subtitle="View, manage, and track all active projects"
+          subtitle="Manage and track all active projects"
           buttons={[
             {
-              label: "Add New Project",
-              onClick: handleAddClick,
+              label: "Add Project",
               variant: "success",
+              onClick: handleAddClick,
             },
           ]}
         />
 
+        {/* Filters Row */}
+        {!isCreateUpdate && (
+          <div className="flex flex-wrap items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md mb-6">
+
+            {/* Search */}
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search project..."
+              className="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white w-60"
+            />
+
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white"
+            >
+              <option value="name">Sort by Name</option>
+              <option value="startDate">Sort by Start Date</option>
+            </select>
+
+            {/* Status Filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white"
+            >
+              <option>All</option>
+              <option>Pending</option>
+              <option>Completed</option>
+              <option>In Progress</option>
+            </select>
+
+          </div>
+        )}
+
         {/* Content */}
-        <div className="mt-8">
+        <div>
           {isCreateUpdate ? (
             <ProjectForm
-              isCreateUpdate={isCreateUpdate}
               setIsCreateUpdate={setIsCreateUpdate}
               objectToEdit={objectToEdit}
             />
           ) : (
-            <div className="animate-fadeIn">
+            <>
               <ProjectCard
-                projects={Array.isArray(projects?.data) ? projects.data : []}
+                projects={paginated}
                 onEdit={handleEditClick}
                 onView={handleView}
               />
-            </div>
+
+              {/* Pagination Controls */}
+              <div className="flex justify-center mt-6 gap-3">
+                <button
+                  className="px-4 py-2 bg-gray-300 rounded disabled:opacity-40"
+                  disabled={page === 1}
+                  onClick={() => setPage(page - 1)}
+                >
+                  Prev
+                </button>
+
+                <span className="px-4 py-2 font-semibold">
+                  Page {page} / {totalPages}
+                </span>
+
+                <button
+                  className="px-4 py-2 bg-gray-300 rounded disabled:opacity-40"
+                  disabled={page === totalPages}
+                  onClick={() => setPage(page + 1)}
+                >
+                  Next
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>

@@ -1,17 +1,24 @@
+
 import PropTypes from "prop-types";
 import { FiChevronRight } from "react-icons/fi";
 import { useEffect } from "react";
 
-const HeaderTitle = ({ title, buttons = [] }) => {
+const HeaderTitle = ({ title, subtitle, buttons = [] }) => {
   useEffect(() => {
     console.log("HeaderTitle rendered with buttons:", buttons);
   }, [buttons]);
 
   return (
     <div className="flex justify-between items-center mb-4">
-      <div className="flex items-center space-x-2 text-gray-700 font-bold">
-        <h2 className="text-2xl font-bold">{title}</h2>
-        {buttons.length > 0 && <FiChevronRight />}
+      <div>
+        <div className="flex items-center space-x-2 text-gray-700 font-bold">
+          <h2 className="text-2xl font-bold">{title}</h2>
+          {buttons.length > 0 && <FiChevronRight />}
+        </div>
+
+        {subtitle && (
+          <p className="text-gray-600 text-sm mt-1">{subtitle}</p>
+        )}
       </div>
 
       <div className="flex space-x-2">
@@ -36,6 +43,7 @@ const HeaderTitle = ({ title, buttons = [] }) => {
 
 HeaderTitle.propTypes = {
   title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string,
   buttons: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
@@ -47,3 +55,4 @@ HeaderTitle.propTypes = {
 };
 
 export default HeaderTitle;
+

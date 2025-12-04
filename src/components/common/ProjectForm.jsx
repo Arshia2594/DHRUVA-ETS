@@ -166,17 +166,27 @@ const ProjectForm = ({ setIsCreateUpdate, objectToEdit }) => {
 
 //  MEMBERS DROPDOWN  
 const DepartmentMembersSelect = () => {
-  const { values } = useFormikContext();
+  let formik;
+
+  try {
+    formik = useFormikContext();
+  } catch {
+    return null; // ← Safe fallback
+  }
+
+  if (!formik) return null; // ← Extra safety
+
+  const { values } = formik;
   const [url, setUrl] = useState(null);
 
   useEffect(() => {
-    if (values.Department?.trim()) {
+    if (values?.Department?.trim()) {
       const dept = values.Department.trim().toLowerCase();
       setUrl(`${GET_ALL_NORMAL_USERS}?department=${dept}`);
     } else {
       setUrl(null);
     }
-  }, [values.Department]);
+  }, [values?.Department]);
 
   const users = useAxios(url, {}, !!url);
 
@@ -190,10 +200,11 @@ const DepartmentMembersSelect = () => {
           label: `${item.FirstName} ${item.LastName}`,
         })) || []
       }
-      isDisabled={!values.Department}
+      isDisabled={!values?.Department}
     />
   );
 };
+
 
 ProjectForm.propTypes = {
   setIsCreateUpdate: PropTypes.func.isRequired,
