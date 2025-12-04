@@ -55,11 +55,11 @@ const EmployeeReport = () => {
       className="p-6"
     >
       {/* STAT CARDS */}
-      <StatCards
+      {/* <StatCards
         timesheetData={timesheetData || []}
         leaveData={leaveData || []}
         projectData={projectData || []}
-      />
+      /> */}
 
       {/* CHARTS ROW */}
       <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -67,9 +67,7 @@ const EmployeeReport = () => {
         <motion.div
           whileHover={{ y: -6, scale: 1.01 }}
           transition={{ type: "spring", stiffness: 220, damping: 16 }}
-          className="bg-white/90 backdrop-blur-xl rounded-2xl border border-gray-200 
-                     shadow-[0_6px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)]
-                     p-4"
+          
         >
           <MonthlyHoursApexChart data={monthlyData} />
         </motion.div>
@@ -78,9 +76,7 @@ const EmployeeReport = () => {
         <motion.div
           whileHover={{ y: -6, scale: 1.01 }}
           transition={{ type: "spring", stiffness: 220, damping: 16 }}
-          className="bg-white/90 backdrop-blur-xl rounded-2xl border border-gray-200 
-                     shadow-[0_6px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)]
-                     p-4"
+          
         >
           <ProjectHoursBarChart data={projectHours} />
         </motion.div>
