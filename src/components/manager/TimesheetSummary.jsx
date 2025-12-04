@@ -31,7 +31,7 @@ export default function TimesheetSummary({ summary }) {
         show: true,
         position: "bottom",
         horizontalAlign: "center",
-        offsetY: 30,
+        offsetY: 10,
         markers: { radius: 6 },
         labels: { colors: "#6b7280" },
       },
@@ -49,7 +49,7 @@ export default function TimesheetSummary({ summary }) {
         ),
         labels: {
           style: { fontSize: "12px", colors: "#6b7280", fontWeight: 500 },
-          offsetY: 15,
+          offsetY: 5,
         },
       },
       yaxis: {
