@@ -20,6 +20,7 @@ const TeamWorkloadSummary = ({ data = [] }) => {
       toolbar: { show: false },
       animations: { enabled: true, easing: "easeinout", speed: 500 },
       zoom: { enabled: false },
+       offsetY: 50,  //Chart ko thoda neeche shift karega
     },
     plotOptions: {
       bar: {
@@ -33,7 +34,12 @@ const TeamWorkloadSummary = ({ data = [] }) => {
     yaxis: { tickAmount: 4 },
     tooltip: { theme: "light" },
     colors: ["#4f46e5"],
-    grid: { borderColor: "#e6e6e6" },
+    grid: { borderColor: "#e6e6e6",
+      padding: {
+      top: -5,
+      bottom: 10, 
+    },
+     },
     responsive: [
       { breakpoint: 1024, options: { plotOptions: { bar: { columnWidth: "60%" } } } },
       { breakpoint: 640, options: { plotOptions: { bar: { columnWidth: "70%" } } } },
