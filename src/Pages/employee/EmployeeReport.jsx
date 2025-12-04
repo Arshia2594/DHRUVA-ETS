@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import MonthlyHoursApexChart from "../../components/chart/MonthlyHourChart";
 import ProjectHoursBarChart from "../../components/chart/ProjectHoursBarChart";
-import StatCards from "../../components/common/StatEmpReport";
+// import StatCards from "../../components/common/StatEmpReport";
 import useAxios from "../../hooks/useAxios";
 import dayjs from "dayjs";
 
@@ -12,9 +12,9 @@ const EmployeeReport = () => {
   const { data: timesheetData, loading: loadingTimesheet } = useAxios(
     `/empTimesheet/get-timesheets?empId=${empId}`
   );
-  const { data: leaveData, loading: loadingLeave } = useAxios(
-    `/employee/leave/my-leaves?empId=${empId}`
-  );
+  // const { data: leaveData, loading: loadingLeave } = useAxios(
+  //   `/employee/leave/my-leaves?empId=${empId}`
+  // );
   const { data: projectData, loading: loadingProjects, error } = useAxios(
     `/project/getProjectsByEmpId/${empId}`
   );
