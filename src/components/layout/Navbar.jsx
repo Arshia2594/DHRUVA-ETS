@@ -38,7 +38,8 @@ const Navbar = ({ open }) => {
 
   return (
     <header className={`fixed top-0 left-0 h-16 flex items-center justify-between px-6 backdrop-blur-xl bg-white/70 dark:bg-gray-900/60 shadow-md z-30 transition-all duration-300
-      ${open ? "md:ml-60 md:w-[calc(100%-15rem)]" : "md:ml-20 md:w-[calc(100%-5rem)]"}`}
+     ${open ? "md:ml-[240px] md:w-[calc(100%-240px)]" : "md:ml-[64px] md:w-[calc(100%-64px)]"}
+`}
     >
       {/* Logo */}
       <div className="flex items-center gap-3">
