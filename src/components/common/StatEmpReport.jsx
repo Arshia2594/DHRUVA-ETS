@@ -32,16 +32,9 @@ const StatCards = ({ timesheetData, leaveData, projectData }) => {
     .filter((l) => l.Status === "Approved")
     .reduce((sum, leave) => sum + (leave.TotalDays || 0), 0);
 
-  // ----- ACTIVE PROJECTS -----
-//  const activeProjects = Array.isArray(projectData)
-//   ? projectData.filter((p) => {
-//       const status = p.Project?.CompletionStatus || p.CompletionStatus;
-//       return status !== "Completed";
-//     }).length
-//   : 0;
-const activeProjects = Array.isArray(projectData)
-  ? projectData.filter((p) => p.Project?.CompletionStatus !== "Completed").length
-  : 0;
+
+const activeProjects = Number(projectData) || 0;
+
 
 
 
