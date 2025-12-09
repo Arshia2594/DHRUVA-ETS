@@ -1,89 +1,56 @@
-
-import { motion } from "framer-motion";
-import MonthlyHoursApexChart from "../../components/chart/MonthlyHourChart";
-import ProjectHoursBarChart from "../../components/chart/ProjectHoursBarChart";
-// import StatCards from "../../components/common/StatEmpReport";
+import { useState } from "react";
 import useAxios from "../../hooks/useAxios";
-import dayjs from "dayjs";
+import TopProjectsPie from "../../components/chart/TopProjectsPie";
+import DailyTimesheetTrend from "../../components/common/DailyTimesheetTrend";
 
-const EmployeeReport = () => {
-  const empId = localStorage.getItem("EmpId");
 
-  const { data: timesheetData, loading: loadingTimesheet } = useAxios(
-    `/empTimesheet/get-timesheets?empId=${empId}`
+export default function ReportsPage() {
+  const [filters, setFilters] = useState({
+    dateRange: "",
+    project: "",
+    status: "",
+  });
+
+  const empId = localStorage.getItem("empId");
+
+  // PIE CHART API
+  const { data: projectPie } = useAxios(
+    `/project/top-projects?empId=${empId}`
   );
-  const { data: leaveData, loading: loadingLeave } = useAxios(
-    `/employee/leave/my-leaves?empId=${empId}`
+
+
+  const { data: timesheetData } = useAxios(
+    `/empTimesheet/get-daily-summary`
   );
-  const { data: projectData, loading: loadingProjects, error } = useAxios(
-    `/project/getProjectsByEmpId/${empId}`
-  );
 
-  const loading = loadingTimesheet || loadingLeave || loadingProjects;
-
-  if (loading) {
-    return <p className="p-6 text-gray-600">Loading employee report...</p>;
-  }
-
-  if (error) {
-    return <p className="p-6 text-red-500">Error loading data. Please try again.</p>;
-  }
-
-  const convertToHours = (timeString) => {
-    if (!timeString) return 0;
-    const [h, m, s] = timeString.split(":").map(Number);
-    return h + m / 60 + s / 3600;
-  };
-
-  const monthlyData =
-    timesheetData?.map((item) => ({
-      day: dayjs(item.WorkDate).format("DD"),
-      hours: convertToHours(item.TotalTimeSpent),
-    })) || [];
-
-  const projectHours =
-    projectData?.map((p) => ({
-      name: p.ProjectName,
-      hours: convertToHours(p.TotalHoursSpent),
-    })) || [];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, ease: "easeOut" }}
-      className="p-6"
-    >
-      {/* STAT CARDS */}
-      {/* <StatCards
-        timesheetData={timesheetData || []}
-        leaveData={leaveData || []}
-        projectData={projectData || []}
-      /> */}
+    <div className="min-h-screen bg-[#F6F8FA] flex justify-center px-6 py-8">
+      <div className="w-full max-w-[1440px]">
 
-      {/* CHARTS ROW */}
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Monthly Hours Chart */}
-        <motion.div
-          whileHover={{ y: -6, scale: 1.01 }}
-          transition={{ type: "spring", stiffness: 220, damping: 16 }}
-          
-        >
-          <MonthlyHoursApexChart data={monthlyData} />
-        </motion.div>
+        {/* Header */}
+        <header className="mb-6">
+          <h1 className="text-[28px] font-semibold text-[#1F2937]">Reports</h1>
+        
+        </header>
+        {/*    CHART SECTION     */}
 
-        {/* Project Hours Chart */}
-        <motion.div
-          whileHover={{ y: -6, scale: 1.01 }}
-          transition={{ type: "spring", stiffness: 220, damping: 16 }}
-          
-        >
-          <ProjectHoursBarChart data={projectHours} />
-        </motion.div>
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <div className="col-span-1">
+            <DailyTimesheetTrend data={timesheetData || []} />
+          </div>
+
+          <div className="col-span-1">
+            <TopProjectsPie data={projectPie || []} />
+          </div>
+
+        </div>
+
+
       </div>
-    </motion.div>
+    </div>
+   
   );
-};
-
-export default EmployeeReport;
+}
 
