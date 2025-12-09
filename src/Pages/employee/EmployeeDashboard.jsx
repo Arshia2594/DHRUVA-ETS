@@ -172,16 +172,17 @@ import MonthlyHoursApexChart from "../../components/chart/MonthlyHourChart";
 
 
 import dayjs from "dayjs";
+import TopProjectsPie from "../../components/chart/TopProjectsPie";
 
 const EmployeeDashboard = () => {
   // const empId = localStorage.getItem("empId");
 
   const empId = Number(localStorage.getItem("empId"));
 
-if (!empId) {
-  console.error("EmployeeDashboard: empId missing in localStorage");
-  return <p className="p-6 text-red-500">Employee ID missing. Please login again.</p>;
-}
+  if (!empId) {
+    console.error("EmployeeDashboard: empId missing in localStorage");
+    return <p className="p-6 text-red-500">Employee ID missing. Please login again.</p>;
+  }
 
 
 
@@ -195,11 +196,16 @@ if (!empId) {
   );
 
   const { data: activeProjectsData, loading: loadActive } = useAxios(
-  `/project/get-active-project-count?empId=${empId}`
-);
+    `/project/get-active-project-count?empId=${empId}`
+  );
+
+  const { data: projectPie } = useAxios(
+    `/project/top-projects?empId=${empId}`
+  );
+
+  console.log("Project Pie API:", projectPie);
 
 
-  
 
   const loading = loadTimesheet || loadLeave || loadActive;
 
@@ -218,7 +224,7 @@ if (!empId) {
       hours: convertToHours(entry.TotalTimeSpent),
     })) || [];
 
- 
+
 
   // ---- TODAY SUMMARY ----
   const today = dayjs().format("YYYY-MM-DD");
@@ -231,8 +237,8 @@ if (!empId) {
   const pendingTimesheets =
     timesheetData?.filter((t) => t.ManagerApproval === "Pending").length || 0;
 
-  
-    console.log("empId:", localStorage.getItem("empId"));
+
+  console.log("empId:", localStorage.getItem("empId"));
 
   return (
     <motion.div
@@ -245,7 +251,7 @@ if (!empId) {
       <StatCards
         timesheetData={timesheetData}
         leaveData={leaveData}
-         projectData={activeProjectsData?.activeProjects || 0}  
+        projectData={activeProjectsData?.activeProjects || 0}
       />
 
       {/* 2. TODAY SUMMARY */}
@@ -266,15 +272,20 @@ if (!empId) {
       </div>
 
       {/* 3. CHARTS */}
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <motion.div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+
         <motion.div whileHover={{ y: -6, scale: 1.01 }}>
           <MonthlyHoursApexChart data={monthlyData} />
         </motion.div>
 
         <motion.div whileHover={{ y: -6, scale: 1.01 }}>
-       
+          {/* <TopProjectsPie data={projectPie?.data || []} /> */}
+          <TopProjectsPie data={projectPie} />
+
         </motion.div>
-      </div>
+
+      </motion.div>
+
     </motion.div>
   );
 };
