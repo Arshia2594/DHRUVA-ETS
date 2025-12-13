@@ -2,6 +2,7 @@ import { useState } from "react";
 import useAxios from "../../hooks/useAxios";
 import TopProjectsPie from "../../components/chart/TopProjectsPie";
 import DailyTimesheetTrend from "../../components/common/DailyTimesheetTrend";
+import ReportTimesheetTable from "../../components/common/ReportTimesheetTable";
 
 
 export default function ReportsPage() {
@@ -22,6 +23,10 @@ export default function ReportsPage() {
   const { data: timesheetData } = useAxios(
     `/empTimesheet/get-daily-summary`
   );
+
+  const { data: timesheetReport } = useAxios(
+  `/empTimesheet/get-timesheets?empId=${empId}`
+);
 
 
   return (
@@ -46,6 +51,7 @@ export default function ReportsPage() {
           </div>
 
         </div>
+        <ReportTimesheetTable data={timesheetReport || []} />
 
 
       </div>
