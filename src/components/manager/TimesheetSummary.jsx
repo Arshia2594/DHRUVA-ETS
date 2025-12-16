@@ -15,9 +15,9 @@ export default function TimesheetSummary({ summary }) {
         toolbar: { show: false },
         animations: { easing: "easeinout", speed: 800 },
 
-        offsetY: 50,
+        offsetY: 0,
         padding: {
-          bottom: 40
+          bottom: 0
         }
       },
       plotOptions: {
@@ -31,7 +31,7 @@ export default function TimesheetSummary({ summary }) {
         show: true,
         position: "bottom",
         horizontalAlign: "center",
-        offsetY: 10,
+        offsetY: 5,
         markers: { radius: 6 },
         labels: { colors: "#6b7280" },
       },
@@ -87,9 +87,9 @@ export default function TimesheetSummary({ summary }) {
 
 
         // fix extra gap
-        offsetY: 50,
+        offsetY: 10,
         padding: {
-          bottom: 40
+          bottom: 10
         }
       },
       labels: pieData.map((p) => p.name),
@@ -98,7 +98,7 @@ export default function TimesheetSummary({ summary }) {
         fontSize: "13px",
         labels: { colors: "#6b7280" },
         markers: { radius: 8 },
-        offsetY: 70,
+        offsetY: 10,
       },
       tooltip: {
         theme: "light",
