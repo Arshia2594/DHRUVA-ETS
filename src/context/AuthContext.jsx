@@ -121,7 +121,7 @@ export const AuthProvider = ({ children }) => {
         );
 
         const data = await res.json();
-        setUser(data); // 🌟 Profile store
+        setUser(data); // Profile store
       } catch (error) {
         console.error("Profile fetch error:", error);
         setUser(null);
