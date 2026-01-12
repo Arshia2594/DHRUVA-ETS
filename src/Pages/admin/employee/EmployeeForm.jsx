@@ -1,11 +1,10 @@
-
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
 import Input from "../../../components/common/Input";
-import axiosInstance from "../../../components/common/AxiosInstance";
-import FormikDatePicker from "../../../components/common/FormikDatePicker";
 import FormSelect from "../../../components/common/FormSelect";
+import FormikDatePicker from "../../../components/common/FormikDatePicker";
+import axiosInstance from "../../../components/common/AxiosInstance";
 
 const INITIAL_FORM_STATE = {
   EmpID: "",
@@ -13,79 +12,66 @@ const INITIAL_FORM_STATE = {
   LastName: "",
   Email: "",
   Mobile: "",
-  Role: "",
+  Role: "user",
   Department: "",
-  BirthDate: "",
-  Gender: "",
-  MaritalStatus: "",
-  EmployeeType: "",
-  Status: "",
+  UserName: "",       
+  Designation: "",
+  Status: "Active",
   JoiningDate: "",
 };
 
 const departmentOptions = [
-   { value: "Admin-HR", label: "Admin-HR" },
-    { value: "Project-Automation", label: "Project-Automation" },
-  { value: "IT", label: "IT-OT" },
-  { value: "IT-Infra structure", label: "IT Infrastructure" },
-  { value: "Project-Design", label: "Project-Design" },
+  { value: "Admin-HR", label: "Admin-HR" },
+  { value: "Project-Automation", label: "Project-Automation" },
+  { value: "IT", label: "IT" },
   { value: "Sales", label: "Sales" },
-  { value: "DesignProject", label: "Design Project" },
-
-];
-
-const maritalStatusOptions = [
-  { value: "Single", label: "Single" },
-  { value: "Married", label: "Married" },
-
-];
-
-const employeeTypeOptions = [
-  { value: "Permanent", label: "Permanent" },
-  { value: "Contract", label: "Contract" },
-  { value: "Intern", label: "Intern" },
 ];
 
 const statusOptions = [
   { value: "Active", label: "Active" },
   { value: "Inactive", label: "Inactive" },
-  { value: "On Leave", label: "On Leave" },
 ];
 
-const GenderOptions = [
-  {value: "Male" ,label:"Male"},
-  {value:"Female",label:"Female"}
-]
-
 const FORM_VALIDATION = Yup.object({
-  EmpID: Yup.number().required("EmpID is required"),
-  Name: Yup.string().required("First Name is required"),
-  LastName: Yup.string().required("Last Name is required"),
-  Email: Yup.string().email("Invalid Email").required("Email is required"),
-  Mobile: Yup.number().typeError("Invalid number").required("Mobile is required"),
-  Role: Yup.string().required("Role is required"),
-  Department: Yup.string().required("Department is required"),
-  BirthDate: Yup.date().required("Birth Date is required"),
-  Gender: Yup.string().required("Gender is required"),
-  MaritalStatus: Yup.string().required("Marital Status is required"),
-  EmployeeType: Yup.string().required("Employee Type is required"),
-  Status: Yup.string().required("Status is required"),
-  JoiningDate: Yup.date().required("Joining Date is required"),
+  Name: Yup.string().required("First Name required"),
+  LastName: Yup.string().required("Last Name required"),
+  Email: Yup.string().email().required(),
+  Mobile: Yup.string().required(),
+  Department: Yup.string().required(),
+   UserName: Yup.string().required("Username required"),      
+  Designation: Yup.string().required("Designation required"),
+  JoiningDate: Yup.date().required(),
 });
 
-const EmployeeForm = ({ initialValues, onSuccess, onCancel }) => {
-  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+const EmployeeForm = ({ initialValues, mode, onSuccess, onCancel }) => {
+  const isView = mode === "view";
+  const isEdit = mode === "edit";
+
+  const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      if (!initialValues) {
-        await axiosInstance.post("/employee/createEmployee", values);
+      const payload = {
+        FirstName: values.Name,
+        LastName: values.LastName,
+        Email: values.Email,
+        Mobile: values.Mobile,
+        Role: values.Role,
+        JoiningDate: values.JoiningDate,
+        department: values.Department,
+        status: values.Status,
+      };
+
+      if (isEdit) {
+        await axiosInstance.put(
+          `/employee/editUser/${values.EmpID}`,
+          payload
+        );
       } else {
-        await axiosInstance.put(`/employee/modifyEmpDeatils?EmpID=${initialValues.EmpID}`, values);
+        await axiosInstance.post("/employee/addUser", payload);
       }
+
       onSuccess();
-      resetForm();
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      alert(error?.response?.data?.message || "Something went wrong!");
+    } catch (err) {
+      alert(err?.response?.data?.message || "Error");
     } finally {
       setSubmitting(false);
     }
@@ -94,41 +80,70 @@ const EmployeeForm = ({ initialValues, onSuccess, onCancel }) => {
   return (
     <Formik
       initialValues={initialValues || INITIAL_FORM_STATE}
-      validationSchema={FORM_VALIDATION}
+      validationSchema={isView ? null : FORM_VALIDATION}
       onSubmit={handleSubmit}
+      enableReinitialize
     >
       {({ isSubmitting }) => (
-        <Form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-6 rounded-lg shadow-md mb-6">
-          <Input name="EmpID" label="EmpID" />
-          <Input name="Name" label="First Name" />
-          <Input name="LastName" label="Last Name" />
-          <Input name="Email" label="Email" />
-          <Input name="Mobile" label="Mobile" />
-          <Input name="Role" label="Role" />
-          <FormSelect name="Department" label="Department" options={departmentOptions} />
-          <FormikDatePicker name="BirthDate" label="Birth Date" />
-          {/* <Input name="Gender" label="Gender" /> */}
-          <FormSelect name ="gender" label="Gender" options={GenderOptions}/>
-          <FormSelect name="MaritalStatus" label="Marital Status" options={maritalStatusOptions} />
-          <FormSelect name="EmployeeType" label="Employee Type" options={employeeTypeOptions} />
-          <FormSelect name="Status" label="Status" options={statusOptions} />
-          <FormikDatePicker name="JoiningDate" label="Joining Date" />
+        <Form className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          <div className="flex space-x-2 col-span-full mt-4">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
-            >
-              {initialValues ? "Update" : "Submit"}
-            </button>
+          <Input name="Name" label="First Name" disabled={isView} />
+          <Input name="LastName" label="Last Name" disabled={isView} />
+          <Input name="Email" label="Email" disabled={isView} />
+          <Input name="Mobile" label="Mobile" disabled={isView} />
+          <Input
+            name="UserName"
+            label="Username"
+            disabled={isView}
+          />
+
+          <Input
+            name="Designation"
+            label="Designation"
+            disabled={isView}
+          />
+
+
+          <FormSelect
+            name="Department"
+            label="Department"
+            options={departmentOptions}
+            disabled={isView}
+          />
+
+          <FormSelect
+            name="Status"
+            label="Status"
+            options={statusOptions}
+            disabled={isView}
+          />
+
+
+
+          <FormikDatePicker
+            name="JoiningDate"
+            label="Joining Date"
+            disabled={isView}
+          />
+
+          <div className="col-span-full flex justify-end gap-2 mt-4">
             <button
               type="button"
               onClick={onCancel}
-              className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+              className="px-4 py-2 bg-gray-300 rounded"
             >
-              Cancel
+              Close
             </button>
+
+            {!isView && (
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-4 py-2 bg-green-600 text-white rounded"
+              >
+                {isEdit ? "Update" : "Submit"}
+              </button>
+            )}
           </div>
         </Form>
       )}
@@ -138,9 +153,9 @@ const EmployeeForm = ({ initialValues, onSuccess, onCancel }) => {
 
 EmployeeForm.propTypes = {
   initialValues: PropTypes.object,
+  mode: PropTypes.string.isRequired,
   onSuccess: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
 };
 
 export default EmployeeForm;
-

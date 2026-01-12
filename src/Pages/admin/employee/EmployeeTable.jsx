@@ -1,116 +1,74 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
-import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/24/solid";
+import axiosInstance from "../../../components/common/AxiosInstance";
 import HeaderTitle from "../../../components/common/HeaderTitle";
 import FilterableCollapsibleTable from "../../../components/HOC/FilterableCollapsibleTable";
-import axiosInstance from "../../../components/common/AxiosInstance";
+import Modal from "../../../components/common/Modal";
+import EmployeeForm from "./EmployeeForm";
 
 const EmployeeTable = () => {
   const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-
-    //  FETCH EMPLOYEES
+  const [modalOpen, setModalOpen] = useState(false);
+  const [mode, setMode] = useState("add");
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const fetchEmployees = async () => {
-    try {
-      setLoading(true);
-      const res = await axiosInstance.get("/employee/all");
-      setEmployees(res.data || []);
-    } catch (error) {
-      console.error("Failed to fetch employees", error);
-    } finally {
-      setLoading(false);
-    }
+    const res = await axiosInstance.get("/employee/all");
+    setEmployees(res.data || []);
   };
 
   useEffect(() => {
     fetchEmployees();
   }, []);
 
-    //  ACTION HANDLERS
- 
-  const handleView = (row) => {
-    navigate(`/admin/employees/view/${row.EmpID}`);
+  const handleAdd = () => {
+    setMode("add");
+    setSelectedEmployee(null);
+    setModalOpen(true);
   };
 
-  const handleEdit = (row) => {
-    navigate(`/admin/employees/edit/${row.EmpID}`);
-  };
+  const openEmployee = async (row, type) => {
+    const res = await axiosInstance.get(`/employee/employee/${row.EmpID}`);
+    const u = res.data;
 
-  const handleDelete = async (row) => {
-    const confirm = await Swal.fire({
-      title: "Are you sure?",
-      text: "This employee will be permanently deleted.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete",
-      cancelButtonText: "Cancel",
+    setSelectedEmployee({
+      EmpID: u.EmpId,
+      Name: u.FirstName,
+      LastName: u.LastName,
+      Email: u.Email,
+      Mobile: u.Mobile,
+      Role: u.Role,
+      Department: u.department,
+      Status: u.status,
+      JoiningDate: u.JoiningDate,
     });
 
-    if (!confirm.isConfirmed) return;
-
-    try {
-      await axiosInstance.delete(`/employee/${row.EmpID}`);
-
-      Swal.fire({
-        title: "Deleted!",
-        text: "Employee deleted successfully.",
-        icon: "success",
-      });
-
-      fetchEmployees();
-    } catch (error) {
-      console.error("Delete failed", error);
-      Swal.fire("Error", "Unable to delete employee", "error");
-    }
+    setMode(type);
+    setModalOpen(true);
   };
 
-
-    //  TABLE COLUMNS
-  
   const columns = useMemo(
     () => [
-      { field: "EmpID", headerName: "Employee ID" },
+      { field: "EmpID", headerName: "Emp ID" },
       { field: "Name", headerName: "First Name" },
       { field: "LastName", headerName: "Last Name" },
-      { field: "Email", headerName: "Email" },
-      { field: "Mobile", headerName: "Mobile" },
       { field: "Department", headerName: "Department" },
-      { field: "Designation", headerName: "Designation" },
+      { field: "UserName" , headerName: "UserName"},
+      { field: "Designation", headerName:"Designation"},
       { field: "Status", headerName: "Status" },
-
-      /*  ACTION COLUMN */
       {
         field: "actions",
         headerName: "Actions",
         render: (row) => (
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => handleView(row)}
-              title="View"
-              className="text-blue-600 hover:text-blue-800"
-            >
-              <EyeIcon className="h-4 w-4" />
-            </button>
-
-            <button
-              onClick={() => handleEdit(row)}
-              title="Edit"
-              className="text-green-600 hover:text-green-800"
-            >
-              <PencilIcon className="h-4 w-4" />
-            </button>
-
-            <button
-              onClick={() => handleDelete(row)}
-              title="Delete"
-              className="text-red-600 hover:text-red-800"
-            >
-              <TrashIcon className="h-4 w-4" />
-            </button>
+          <div className="flex gap-3">
+            <EyeIcon
+              className="h-4 w-4 text-blue-600 cursor-pointer"
+              onClick={() => openEmployee(row, "view")}
+            />
+            <PencilIcon
+              className="h-4 w-4 text-green-600 cursor-pointer"
+              onClick={() => openEmployee(row, "edit")}
+            />
           </div>
         ),
       },
@@ -118,52 +76,47 @@ const EmployeeTable = () => {
     []
   );
 
-
-    // COLLAPSIBLE FIELDS
-  
-  const collapsibleFields = [
-    "Gender",
-    "MaritalStatus",
-    "EmployeeType",
-    "BirthDate",
-  ];
-
-
-   //  FILTER CONFIG
-
-  const filterFields = ["EmpID", "Name", "Department", "Status"];
-
-  const filterMeta = {
-    Status: {
-      type: "select",
-      label: "Status",
-      options: [
-        { label: "Active", value: "Active" },
-        { label: "Inactive", value: "Inactive" },
-      ],
-    },
-  };
-
   return (
-    <div className="space-y-6">
-      <HeaderTitle title="Employees" />
+    <div className="space-y-4">
+      <div className="flex justify-between">
+        <HeaderTitle title="Employees" />
+        <button
+          onClick={handleAdd}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          <PlusIcon className="h-4 w-4" />
+          Add Employee
+        </button>
+      </div>
 
-      {loading ? (
-        <div className="text-center text-gray-500 py-10">
-          Loading employees...
-        </div>
-      ) : (
-        <FilterableCollapsibleTable
-          title="Employee List"
-          columns={columns}
-          data={employees}
-          keyField="EmpID"
-          collapsibleFields={collapsibleFields}
-          filterFields={filterFields}
-          filterMeta={filterMeta}
-          initialRowsPerPage={10}
+      <FilterableCollapsibleTable
+        title="Employee List"
+        columns={columns}
+        data={employees}
+        keyField="EmpID"
+      />
+
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={
+          mode === "add"
+            ? "Add Employee"
+            : mode === "edit"
+            ? "Edit Employee"
+            : "Employee Details"
+        }
+      >
+        <EmployeeForm
+          initialValues={selectedEmployee}
+          mode={mode}
+          onSuccess={() => {
+            setModalOpen(false);
+            fetchEmployees();
+          }}
+          onCancel={() => setModalOpen(false)}
         />
-      )}
+      </Modal>
     </div>
   );
 };
