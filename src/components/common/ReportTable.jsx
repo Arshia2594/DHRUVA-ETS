@@ -1,18 +1,23 @@
 
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 const ITEMS_PER_PAGE = 5;
 
 const ReportTable = ({ rows = [] }) => {
+ const safeRows = Array.isArray(rows) ? rows : [];
   const [currentPage, setCurrentPage] = useState(1);
 
-  const paginatedRows = rows.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+  const paginatedRows = useMemo(
+    () =>
+      safeRows.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+      ),
+    [safeRows, currentPage]
   );
 
-  const totalPages = Math.ceil(rows.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(safeRows.length / ITEMS_PER_PAGE);
 
   return (
     <div className="mt-6 bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
