@@ -28,15 +28,16 @@ import TimeTracking from "./Pages/employee/TimeTracking";
 
 // Employee Pages
 import EmployeeDashboard from "./Pages/employee/EmployeeDashboard";
-import Reports from "./Pages/admin/report/Reports";
+// import Reports from "./Pages/admin/report/Reports";
 import TimeSheetTracker from "./Pages/manager/TimeSheetTracker";
 import Projects from "./components/common/Projects";
-import TeamAdmin from "./Pages/admin/TeamAdmin";
+//import TeamAdmin from "./Pages/admin/TeamAdmin";
 import Teams from "./Pages/manager/Teams";
 import TeamDetails from "./components/common/TeamDetail";
 import Leave from "./Pages/employee/Leave"
 import EmployeeReport from "./Pages/employee/EmployeeReport";
 import ProfilePage from "./Pages/profile/ProfilePage";
+import TeamPage from "./Pages/admin/Teams/TeamPage";
 
 
 // Protected Route Component
@@ -82,7 +83,7 @@ const App = () => {
           <Route path="employees" element={<Employee />} />
           <Route path="customers" element={<Customer />} />
           <Route path="projects" element={<Projects />} />
-          <Route path="teams/:teamId" element={<TeamAdmin />} />
+         <Route path="teams/:team" element={<TeamPage />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
             <Route path="leave" element={<Leave />} />
         </Route>

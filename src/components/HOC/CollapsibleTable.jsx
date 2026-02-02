@@ -17,10 +17,7 @@ const CollapsibleTable = ({
   const handleToggleRow = (key) => {
     setOpenRows((prev) => ({ ...prev, [key]: !prev[key] }));
   };
-
- 
-
-  const handleApproval = async (timesheetId, status) => {
+    const handleApproval = async (timesheetId, status) => {
   const confirm = await Swal.fire({
     title: "Are you sure?",
     text: `You want to ${status} this timesheet?`,
