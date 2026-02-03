@@ -9,6 +9,7 @@ import {
 import axiosInstance from "../../components/common/AxiosInstance";
 import ProjectTrends from "../../components/common/ProjectTrends";
 import TeamPerformance from "../../components/common/TeamPerformance";
+import ProjectReportTable from "../../components/common/ProjectReportTable";
 
 const StatCard = ({ title, value, subtitle, icon: Icon, color }) => (
   <div className="bg-white rounded-xl shadow-sm p-6 flex justify-between items-center">
@@ -91,16 +92,21 @@ const Reports = () => {
     </div>
 
      {/* CHART SECTION */}
+      <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <ProjectTrends data={trendData} />
         </div>
 
         {/* Right side future section (Team Performance etc.) */}
-        <div className="bg-white rounded-xl border p-5">
+       
           <TeamPerformance />
-        </div>
-      </div>
+
+           </div>
+
+            <ProjectReportTable />
+        
+     </div>
        </>
   );
 };
