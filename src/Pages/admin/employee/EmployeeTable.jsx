@@ -322,15 +322,21 @@ const EmployeeTable = () => {
   ======================= */
   const fetchEmployees = async () => {
     try {
-      const res = await axiosInstance.get("/employee/all");
+    const res = await axiosInstance.get("/employee/all");
+    setEmployees(res.data || []);
+      // Normalize avatar for table
+      // const normalized = (res.data || []).map((emp) => ({
+      //   ...emp,
+      //   avatar: emp.avatar || DEFAULT_AVATAR,
+      // }));
 
-      // ✅ Normalize avatar for table
-      const normalized = (res.data || []).map((emp) => ({
-        ...emp,
-        avatar: emp.avatar || DEFAULT_AVATAR,
-      }));
+      // const normalized = (res.data || []).map((emp) => ({
+      //   ...emp,
+      //   avatar: emp.avatar,
+      // }));
 
-      setEmployees(normalized);
+      // setEmployees(normalized);
+
     } catch (err) {
       console.error("Failed to load employees", err);
     }
@@ -371,7 +377,7 @@ const EmployeeTable = () => {
         JoiningDate: u.JoiningDate,
         UserName: u.UserName,
         Designation: u.Designation,
-        avatar: u.avatar || DEFAULT_AVATAR, // ✅ IMPORTANT
+        avatar: u.avatar || DEFAULT_AVATAR, //  IMPORTANT
       });
 
       setMode(type);
@@ -393,10 +399,14 @@ const EmployeeTable = () => {
         render: (row) => (
           <div className="flex items-center gap-3">
             <img
-              src={row.avatar || DEFAULT_AVATAR}
+              src={row.avatar ? row.avatar : DEFAULT_AVATAR}
               alt="profile"
               className="h-9 w-9 rounded-full object-cover border"
+              onError={(e) => {
+                e.currentTarget.src = DEFAULT_AVATAR;
+              }}
             />
+
             <div>
               <p className="font-medium text-gray-900">
                 {row.Name} {row.LastName}
@@ -411,7 +421,26 @@ const EmployeeTable = () => {
 
       { field: "Department", headerName: "Department" },
       { field: "UserName", headerName: "Username" },
-      { field: "Status", headerName: "Status" },
+      {
+  headerName: "Status",
+  render: (row) => {
+    const isActive = row.Status === "Active";
+
+    return (
+      <span
+        className={`px-3 py-1 text-xs font-semibold rounded-full 
+        ${
+          isActive
+            ? "bg-green-100 text-green-700"
+            : "bg-red-100 text-red-600"
+        }`}
+      >
+        {row.Status}
+      </span>
+    );
+  },
+},
+
 
       {
         field: "actions",
@@ -458,8 +487,8 @@ const EmployeeTable = () => {
           mode === "add"
             ? "Add Employee"
             : mode === "edit"
-            ? "Edit Employee"
-            : "Employee Details"
+              ? "Edit Employee"
+              : "Employee Details"
         }
       >
         <EmployeeForm
