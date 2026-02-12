@@ -72,34 +72,65 @@ const Navbar = ({ open }) => {
           </motion.button>
 
           {profileOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 text-sm shadow-lg rounded-md border dark:border-gray-700 py-2 z-50"
-            ><motion.div
-              whileHover={{ x: 3 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            ><Link
-              to="/profile"
-              className="flex items-center gap-2 px-4 py-2 rounded-md transition-all
-             hover:bg-gray-100 dark:hover:bg-gray-700 group"
-            >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    strokeWidth={1.8} stroke="currentColor"
-                    className="w-5 h-5 text-gray-600 group-hover:text-green-600 transition-colors">
-                    <path strokeLinecap="round" strokeLinejoin="round"
-                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.5 20.25a8.25 8.25 0 1 1 15 0v.75H4.5v-.75z" />
-                  </svg>
-                  <span className="text-gray-700 dark:text-gray-100 group-hover:text-green-600">
-                    My Profile
-                  </span>
-                </Link>
+  <motion.div
+    initial={{ opacity: 0, y: -5 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="absolute right-0 mt-3 w-56 bg-white dark:bg-gray-800 
+               shadow-xl rounded-xl border dark:border-gray-700 
+               overflow-hidden z-50"
+  >
+    {/* User Info Section */}
+    {/* <div className="px-4 py-3 border-b dark:border-gray-700">
+      <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 capitalize">
+  {user?.role}
+</p>
+<p className="text-xs text-gray-500 dark:text-gray-400">
+  {user?.email}
+</p>
+    </div> */}
 
-              </motion.div>
+    {/* Menu Items */}
+    <div className="py-2 text-sm">
 
-            </motion.div>
-          )}
+      <Link
+        to="/profile"
+        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 
+                   dark:hover:bg-gray-700 transition"
+      >
+        <FiUser size={16} />
+        <span>My Profile</span>
+      </Link>
+
+      <Link
+        to="/profile/edit"
+        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 
+                   dark:hover:bg-gray-700 transition"
+      >
+        ✏️ <span>Edit Profile</span>
+      </Link>
+
+      <Link
+        to="/profile/change-password"
+        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 
+                   dark:hover:bg-gray-700 transition"
+      >
+        🔒 <span>Change Password</span>
+      </Link>
+
+      <div className="border-t my-2 dark:border-gray-700"></div>
+
+      <button
+        onClick={handleLogout}
+        className="w-full text-left flex items-center gap-3 px-4 py-2 
+                   text-red-500 hover:bg-red-50 dark:hover:bg-gray-700 transition"
+      >
+        <FiPower size={16} />
+        <span>Logout</span>
+      </button>
+
+    </div>
+  </motion.div>
+)}
         </div>
 
         {/* Logout */}
