@@ -38,6 +38,8 @@ import Leave from "./Pages/employee/Leave"
 import EmployeeReport from "./Pages/employee/EmployeeReport";
 import ProfilePage from "./Pages/profile/ProfilePage";
 import TeamPage from "./Pages/admin/Teams/TeamPage";
+import EditProfile from "./Pages/profile/EditProfile";
+import ChangePassword from "./Pages/profile/ChangePassword";
 
 
 // Protected Route Component
@@ -66,8 +68,34 @@ const App = () => {
 
         {/*  Public Route */}
         <Route path="/login" element={<LogIn />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        {/* <Route path="/profile" element={<ProfilePage />} /> */}
 
+        <Route
+          path="/profile/*"
+          element={
+            <ProtectedRoute allowedRoles={["Admin", "Manager", "User"]}>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile/edit"
+          element={
+            <ProtectedRoute allowedRoles={["Admin", "Manager", "User"]}>
+              <EditProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile/change-password"
+          element={
+            <ProtectedRoute allowedRoles={["Admin", "Manager", "User"]}>
+              <ChangePassword />
+            </ProtectedRoute>
+          }
+        />
 
         {/*  Admin Routes */}
         <Route
@@ -83,9 +111,9 @@ const App = () => {
           <Route path="employees" element={<Employee />} />
           <Route path="customers" element={<Customer />} />
           <Route path="projects" element={<Projects />} />
-         <Route path="teams/:team" element={<TeamPage />} />
+          <Route path="teams/:team" element={<TeamPage />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
-            <Route path="leave" element={<Leave />} />
+          <Route path="leave" element={<Leave />} />
         </Route>
 
         {/* Manager Routes */}
@@ -98,17 +126,17 @@ const App = () => {
           }
         >
           <Route path="dashboard" element={<ManagerDashboard />} />
-          <Route path="report" element={<ManagerReport/>} />
-          <Route path="team" element={<Teams/>} />
+          <Route path="report" element={<ManagerReport />} />
+          <Route path="team" element={<Teams />} />
           <Route path="time-tracker" element={<TimeSheetTracker />} />
           <Route path="projects" element={<Projects />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
           <Route path="team-details/:empId" element={<TeamDetails />} />
-          <Route path="leave" element = {<Leave/>} />   
+          <Route path="leave" element={<Leave />} />
 
         </Route>
 
-        
+
         <Route
           path="/user/*"
           element={
@@ -122,10 +150,10 @@ const App = () => {
           <Route path="time-tracker" element={<TimeTracking />} />
           <Route path="projects" element={<Projects />} />
           <Route path="project-details/:id" element={<ProjectDetails />} />
-          <Route path="leave" element = {<Leave/>} />                          
+          <Route path="leave" element={<Leave />} />
         </Route>
 
-        
+
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </AuthProvider>
